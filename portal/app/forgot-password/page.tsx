@@ -29,7 +29,7 @@ export default function ForgotPasswordPage(){
   function choose(next:Lang){setLang(next);localStorage.setItem('ederito-portal-language',next)}
   return <main className="shell auth-layout single-auth">
     <section className="auth-copy">
-      <div className="brand"><img className="brand-logo" src="/ederito-logo.svg" alt="Ederito logo"/><span>EDERITO PORTAL</span></div>
+      <div className="brand"><img className="brand-logo" src="https://ederito.com/assets/eder-logo.png" alt="Ederito logo"/><span>EDERITO PORTAL</span></div>
       <p className="eyebrow" style={{marginTop:64}}>ACCOUNT SECURITY</p>
       <h1 className="hero-title compact-title">{t.title}</h1><p className="lead">{t.lead}</p>
     </section>
