@@ -1,70 +1,4 @@
 const supportedLanguages = ['en', 'fr', 'es'];
-const menu = document.querySelector('.menu');
-const nav = document.querySelector('.nav');
-
-if (menu && nav) {
-  menu.addEventListener('click', () => {
-    const open = nav.classList.toggle('open');
-    menu.setAttribute('aria-expanded', String(open));
-  });
-  nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-    nav.classList.remove('open');
-    menu.setAttribute('aria-expanded', 'false');
-  }));
-}
-
-function installLegalLinks() {
-  const footer = document.querySelector('.footer');
-  const footerLinks = footer?.querySelector('div');
-  if (footerLinks && !footerLinks.querySelector('[href="legal.html"]')) {
-    const links = [
-      ['legal.html#terms', 'Terms', 'Conditions', 'Términos'],
-      ['legal.html#privacy', 'Privacy', 'Confidentialité', 'Privacidad'],
-      ['legal.html#maintenance', 'Maintenance policy', 'Politique de maintenance', 'Política de mantenimiento'],
-      ['legal.html#refunds', 'Refund policy', 'Politique de remboursement', 'Política de reembolso']
-    ];
-    links.forEach(([href, en, fr, es]) => {
-      const link = document.createElement('a');
-      link.href = href;
-      link.dataset.en = en;
-      link.dataset.fr = fr;
-      link.dataset.es = es;
-      link.textContent = en;
-      footerLinks.appendChild(link);
-    });
-  }
-
-  const form = document.getElementById('contactForm');
-  const submit = form?.querySelector('button[type="submit"]');
-  if (form && submit && !document.getElementById('legalAcceptance')) {
-    const consent = document.createElement('label');
-    consent.className = 'legal-consent';
-    consent.innerHTML = `
-      <input id="legalAcceptance" name="legal_acceptance" type="checkbox" required>
-      <span data-en="I confirm that I am authorized to submit this request and agree to Ederito’s Terms, Privacy Policy, Maintenance Policy and Refund Policy. A project does not begin until a separate proposal or agreement is approved and any required deposit is paid."
-            data-fr="Je confirme être autorisé à envoyer cette demande et j’accepte les Conditions, la Politique de confidentialité, la Politique de maintenance et la Politique de remboursement d’Ederito. Un projet ne commence qu’après approbation d’une proposition ou d’un contrat distinct et paiement de l’acompte requis."
-            data-es="Confirmo que estoy autorizado para enviar esta solicitud y acepto los Términos, la Política de Privacidad, la Política de Mantenimiento y la Política de Reembolso de Ederito. Un proyecto no comienza hasta que se apruebe una propuesta o contrato separado y se pague el depósito requerido.">I confirm that I am authorized to submit this request and agree to Ederito’s Terms, Privacy Policy, Maintenance Policy and Refund Policy. A project does not begin until a separate proposal or agreement is approved and any required deposit is paid.</span>`;
-    const policyLinks = document.createElement('p');
-    policyLinks.className = 'legal-policy-links';
-    policyLinks.innerHTML = `<a href="legal.html" target="_blank" rel="noopener" data-en="Review the Legal Center before submitting ↗" data-fr="Consulter le Centre juridique avant l’envoi ↗" data-es="Revisar el Centro Legal antes de enviar ↗">Review the Legal Center before submitting ↗</a>`;
-    form.insertBefore(consent, submit);
-    form.insertBefore(policyLinks, submit);
-  }
-
-  if (!document.getElementById('legal-ui-styles')) {
-    const style = document.createElement('style');
-    style.id = 'legal-ui-styles';
-    style.textContent = `
-      .legal-consent{display:grid!important;grid-template-columns:20px 1fr!important;gap:11px!important;align-items:start!important;padding:15px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.025);font-size:12px!important;line-height:1.55;color:#aaa8a1!important}
-      .legal-consent input{width:18px!important;height:18px!important;margin:2px 0 0!important;accent-color:var(--gold)}
-      .legal-policy-links{margin:-8px 0 0!important;font-size:12px!important}.legal-policy-links a{color:var(--gold);text-decoration:none}
-      .footer>div{row-gap:10px;flex-wrap:wrap}.footer>div a{white-space:nowrap}
-    `;
-    document.head.appendChild(style);
-  }
-}
-
-installLegalLinks();
 
 const metadata = {
   en: {
@@ -81,70 +15,200 @@ const metadata = {
   }
 };
 
-const languageButtons = document.querySelectorAll('.lang');
+function installLegalStyles() {
+  if (document.getElementById('ederito-legal-ui-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'ederito-legal-ui-styles';
+  style.textContent = `
+    .legal-consent{
+      display:grid!important;
+      grid-template-columns:22px 1fr!important;
+      gap:12px!important;
+      align-items:start!important;
+      padding:16px!important;
+      border:1px solid rgba(255,255,255,.15)!important;
+      border-radius:14px!important;
+      background:rgba(255,255,255,.035)!important;
+      color:#c8c5be!important;
+      font-size:12px!important;
+      line-height:1.6!important;
+      cursor:pointer;
+    }
+    .legal-consent input{
+      width:18px!important;
+      height:18px!important;
+      margin:3px 0 0!important;
+      accent-color:#f2be32;
+      cursor:pointer;
+    }
+    .legal-consent a,.legal-policy-links a,.footer-legal-links a{
+      color:#f2be32!important;
+      text-decoration:none!important;
+    }
+    .legal-consent a:hover,.legal-policy-links a:hover,.footer-legal-links a:hover{
+      text-decoration:underline!important;
+    }
+    .legal-policy-links{
+      margin:-6px 0 0!important;
+      font-size:12px!important;
+      line-height:1.55!important;
+      color:#aaa8a1!important;
+    }
+    .footer-legal-links{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    @media(max-width:700px){
+      .legal-consent{padding:14px!important;font-size:11px!important}
+      .footer-legal-links{gap:10px}
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function ensureLegalUI() {
+  installLegalStyles();
+
+  const form = document.getElementById('contactForm');
+  const submit = form?.querySelector('button[type="submit"]');
+
+  if (form && submit && !document.getElementById('legalAcceptance')) {
+    const consent = document.createElement('label');
+    consent.className = 'legal-consent';
+    consent.setAttribute('for', 'legalAcceptance');
+    consent.innerHTML = `
+      <input id="legalAcceptance" name="legal_acceptance" type="checkbox" required>
+      <span>
+        <span data-en="I confirm that I am authorized to submit this request and agree to Ederito’s" data-fr="Je confirme être autorisé à envoyer cette demande et j’accepte les" data-es="Confirmo que estoy autorizado para enviar esta solicitud y acepto los">I confirm that I am authorized to submit this request and agree to Ederito’s</span>
+        <a href="legal.html#terms" target="_blank" rel="noopener" data-en="Terms of Service" data-fr="Conditions de service" data-es="Términos de servicio">Terms of Service</a>,
+        <a href="legal.html#privacy" target="_blank" rel="noopener" data-en="Privacy Policy" data-fr="Politique de confidentialité" data-es="Política de Privacidad">Privacy Policy</a>,
+        <a href="legal.html#maintenance" target="_blank" rel="noopener" data-en="Maintenance Policy" data-fr="Politique de maintenance" data-es="Política de Mantenimiento">Maintenance Policy</a>
+        <span data-en="and" data-fr="et la" data-es="y la">and</span>
+        <a href="legal.html#refunds" target="_blank" rel="noopener" data-en="Refund Policy" data-fr="Politique de remboursement" data-es="Política de Reembolso">Refund Policy</a>.
+        <span data-en="A project does not begin until a separate proposal or agreement is approved and any required deposit is paid." data-fr="Un projet ne commence qu’après approbation d’une proposition ou d’un contrat distinct et paiement de l’acompte requis." data-es="Un proyecto no comienza hasta que se apruebe una propuesta o contrato separado y se pague el depósito requerido.">A project does not begin until a separate proposal or agreement is approved and any required deposit is paid.</span>
+      </span>`;
+
+    const review = document.createElement('p');
+    review.className = 'legal-policy-links';
+    review.innerHTML = `<a href="legal.html" target="_blank" rel="noopener" data-en="Review the complete Legal Center before submitting ↗" data-fr="Consulter le Centre juridique complet avant l’envoi ↗" data-es="Revisar el Centro Legal completo antes de enviar ↗">Review the complete Legal Center before submitting ↗</a>`;
+
+    form.insertBefore(consent, submit);
+    form.insertBefore(review, submit);
+  }
+
+  const footer = document.querySelector('.footer');
+  const existingContainer = footer?.querySelector('div');
+  if (footer && existingContainer && !footer.querySelector('.footer-legal-links')) {
+    const legalLinks = document.createElement('div');
+    legalLinks.className = 'footer-legal-links';
+    legalLinks.innerHTML = `
+      <a href="legal.html#terms" data-en="Terms" data-fr="Conditions" data-es="Términos">Terms</a>
+      <a href="legal.html#privacy" data-en="Privacy" data-fr="Confidentialité" data-es="Privacidad">Privacy</a>
+      <a href="legal.html#maintenance" data-en="Maintenance" data-fr="Maintenance" data-es="Mantenimiento">Maintenance</a>
+      <a href="legal.html#refunds" data-en="Refunds" data-fr="Remboursements" data-es="Reembolsos">Refunds</a>`;
+    footer.appendChild(legalLinks);
+  }
+}
+
 function setLanguage(requestedLanguage) {
   const lang = supportedLanguages.includes(requestedLanguage) ? requestedLanguage : 'en';
   document.documentElement.lang = lang;
   document.documentElement.dataset.lang = lang;
+
   document.querySelectorAll('[data-en]').forEach((element) => {
     const translation = element.dataset[lang];
     if (typeof translation === 'string') element.textContent = translation;
   });
-  languageButtons.forEach((button) => {
+
+  document.querySelectorAll('.lang').forEach((button) => {
     const active = button.dataset.language === lang;
     button.classList.toggle('active', active);
     button.setAttribute('aria-pressed', String(active));
   });
+
   document.title = metadata[lang].title;
   document.querySelector('meta[name="description"]')?.setAttribute('content', metadata[lang].description);
   localStorage.setItem('ederito-language', lang);
 }
 
-languageButtons.forEach((button) => button.addEventListener('click', () => setLanguage(button.dataset.language)));
-const savedLanguage = localStorage.getItem('ederito-language');
-const browserLanguage = navigator.language?.slice(0, 2).toLowerCase();
-setLanguage(savedLanguage || (supportedLanguages.includes(browserLanguage) ? browserLanguage : 'en'));
+function initializeSite() {
+  ensureLegalUI();
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
+  const menu = document.querySelector('.menu');
+  const nav = document.querySelector('.nav');
+  if (menu && nav) {
+    menu.addEventListener('click', () => {
+      const open = nav.classList.toggle('open');
+      menu.setAttribute('aria-expanded', String(open));
+    });
+    nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+      nav.classList.remove('open');
+      menu.setAttribute('aria-expanded', 'false');
+    }));
+  }
+
+  document.querySelectorAll('.lang').forEach((button) => {
+    button.addEventListener('click', () => setLanguage(button.dataset.language));
   });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
 
-const year = document.getElementById('year');
-if (year) year.textContent = String(new Date().getFullYear());
+  const savedLanguage = localStorage.getItem('ederito-language');
+  const browserLanguage = navigator.language?.slice(0, 2).toLowerCase();
+  setLanguage(savedLanguage || (supportedLanguages.includes(browserLanguage) ? browserLanguage : 'en'));
 
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-  contactForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    if (!contactForm.reportValidity()) return;
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+  } else {
+    document.querySelectorAll('.reveal').forEach((element) => element.classList.add('visible'));
+  }
 
-    const data = new FormData(contactForm);
-    const lang = document.documentElement.dataset.lang || 'en';
-    const name = String(data.get('name') || '').trim();
-    const email = String(data.get('email') || '').trim();
-    const service = String(data.get('service') || '').trim();
-    const message = String(data.get('message') || '').trim();
-    const acceptedAt = new Date().toISOString();
+  const year = document.getElementById('year');
+  if (year) year.textContent = String(new Date().getFullYear());
 
-    const templates = {
-      en: {
-        subject: `New Ederito project request — ${name}`,
-        body: `Name: ${name}\nEmail: ${email}\nService: ${service}\n\nProject:\n${message}\n\nLegal policies accepted: Yes\nAccepted at: ${acceptedAt}\nNote: This request is not a final project agreement.`
-      },
-      fr: {
-        subject: `Nouvelle demande de projet Ederito — ${name}`,
-        body: `Nom : ${name}\nE-mail : ${email}\nService : ${service}\n\nProjet :\n${message}\n\nPolitiques juridiques acceptées : Oui\nAcceptées le : ${acceptedAt}\nRemarque : cette demande ne constitue pas un contrat de projet définitif.`
-      },
-      es: {
-        subject: `Nueva solicitud de proyecto Ederito — ${name}`,
-        body: `Nombre: ${name}\nCorreo: ${email}\nServicio: ${service}\n\nProyecto:\n${message}\n\nPolíticas legales aceptadas: Sí\nAceptadas el: ${acceptedAt}\nNota: esta solicitud no constituye un contrato final del proyecto.`
-      }
-    };
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      ensureLegalUI();
+      if (!contactForm.reportValidity()) return;
 
-    const template = templates[lang] || templates.en;
-    window.location.href = `mailto:Keffgorederthermozier@gmail.com?subject=${encodeURIComponent(template.subject)}&body=${encodeURIComponent(template.body)}`;
-  });
+      const data = new FormData(contactForm);
+      const lang = document.documentElement.dataset.lang || 'en';
+      const name = String(data.get('name') || '').trim();
+      const email = String(data.get('email') || '').trim();
+      const service = String(data.get('service') || '').trim();
+      const message = String(data.get('message') || '').trim();
+      const acceptedAt = new Date().toISOString();
+
+      const templates = {
+        en: {
+          subject: `New Ederito project request — ${name}`,
+          body: `Name: ${name}\nEmail: ${email}\nService: ${service}\n\nProject:\n${message}\n\nLegal policies accepted: Yes\nAccepted at: ${acceptedAt}\nNote: This request is not a final project agreement.`
+        },
+        fr: {
+          subject: `Nouvelle demande de projet Ederito — ${name}`,
+          body: `Nom : ${name}\nE-mail : ${email}\nService : ${service}\n\nProjet :\n${message}\n\nPolitiques juridiques acceptées : Oui\nAcceptées le : ${acceptedAt}\nRemarque : cette demande ne constitue pas un contrat de projet définitif.`
+        },
+        es: {
+          subject: `Nueva solicitud de proyecto Ederito — ${name}`,
+          body: `Nombre: ${name}\nCorreo: ${email}\nServicio: ${service}\n\nProyecto:\n${message}\n\nPolíticas legales aceptadas: Sí\nAceptadas el: ${acceptedAt}\nNota: esta solicitud no constituye un contrato final del proyecto.`
+        }
+      };
+
+      const template = templates[lang] || templates.en;
+      window.location.href = `mailto:Keffgorederthermozier@gmail.com?subject=${encodeURIComponent(template.subject)}&body=${encodeURIComponent(template.body)}`;
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeSite, { once: true });
+} else {
+  initializeSite();
 }
