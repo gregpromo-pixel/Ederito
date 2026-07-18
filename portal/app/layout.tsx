@@ -6,10 +6,12 @@ import './admin-intakes.css';
 import './client-messages.css';
 import './request-center.css';
 import './sales-workflow.css';
+import './phone-country-code.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import RequestStatusShortcut from './RequestStatusShortcut';
 import SalesWorkflowShortcut from './SalesWorkflowShortcut';
+import PhoneCountryCodeEnhancer from './PhoneCountryCodeEnhancer';
 
 export const metadata: Metadata = {
   title: 'Ederito Client Portal',
@@ -25,6 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <IntakeEnhancer />
         <RequestStatusShortcut />
         <SalesWorkflowShortcut />
+        <PhoneCountryCodeEnhancer />
       </body>
     </html>
   );
