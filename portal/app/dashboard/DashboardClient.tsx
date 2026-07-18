@@ -9,7 +9,7 @@ type Project = { id: string; name: string; status: string; target_launch_date: s
 type Contract = { id: string; title: string; status: string; contract_number: string };
 type Invoice = { id: string; invoice_number: string; status: string; total_cents: number; due_date: string | null };
 type Ticket = { id: string; subject: string; status: string; priority: string };
-type Props = { name: string; projects: Project[]; contracts: Contract[]; invoices: Invoice[]; tickets: Ticket[] };
+type Props = { name: string; isStaff: boolean; projects: Project[]; contracts: Contract[]; invoices: Invoice[]; tickets: Ticket[] };
 
 const copy = {
   en: {
@@ -18,7 +18,7 @@ const copy = {
     openInvoices: 'Open invoices', openTickets: 'Open support tickets', noProjects: 'No active project yet. Start a request and Ederito will review the scope before issuing a proposal.',
     noContracts: 'No contract has been issued yet.', noInvoices: 'No invoices yet.', noTickets: 'No support tickets yet.', status: 'Status', target: 'Target', due: 'Due',
     createTicket: 'Create a support request', subject: 'Subject', description: 'Describe the issue or request', priority: 'Priority', normal: 'Normal', high: 'High', urgent: 'Urgent',
-    submit: 'Submit request', created: 'Your support request was created.', signOut: 'Sign out', startProject: 'Start a project', overview: 'Client overview',
+    submit: 'Submit request', created: 'Your support request was created.', signOut: 'Sign out', startProject: 'Start a project', overview: 'Client overview', admin: 'Operations',
     nextStep: 'Ready for the next move?', nextStepText: 'Choose a service, answer only the relevant questions, and receive a reviewed proposal before work begins.',
     openWorkspace: 'Open workspace', secure: 'Secure workspace', concierge: 'Project concierge', response: 'Human review before payment'
   },
@@ -28,7 +28,7 @@ const copy = {
     openInvoices: 'Factures ouvertes', openTickets: 'Tickets ouverts', noProjects: 'Aucun projet actif. Envoyez une demande et Ederito examinera le périmètre avant de proposer une offre.',
     noContracts: 'Aucun contrat n’a encore été émis.', noInvoices: 'Aucune facture.', noTickets: 'Aucun ticket d’assistance.', status: 'Statut', target: 'Date cible', due: 'Échéance',
     createTicket: 'Créer une demande de support', subject: 'Sujet', description: 'Décrivez le problème ou la demande', priority: 'Priorité', normal: 'Normale', high: 'Élevée', urgent: 'Urgente',
-    submit: 'Envoyer la demande', created: 'Votre demande de support a été créée.', signOut: 'Déconnexion', startProject: 'Démarrer un projet', overview: 'Vue client',
+    submit: 'Envoyer la demande', created: 'Votre demande de support a été créée.', signOut: 'Déconnexion', startProject: 'Démarrer un projet', overview: 'Vue client', admin: 'Opérations',
     nextStep: 'Prêt pour la prochaine étape ?', nextStepText: 'Choisissez un service, répondez seulement aux questions pertinentes et recevez une proposition examinée avant le début du travail.',
     openWorkspace: 'Ouvrir l’espace', secure: 'Espace sécurisé', concierge: 'Conciergerie projet', response: 'Examen humain avant paiement'
   },
@@ -38,13 +38,13 @@ const copy = {
     openInvoices: 'Facturas abiertas', openTickets: 'Tickets abiertos', noProjects: 'Aún no hay proyectos activos. Envía una solicitud y Ederito revisará el alcance antes de emitir una propuesta.',
     noContracts: 'Aún no se ha emitido ningún contrato.', noInvoices: 'Aún no hay facturas.', noTickets: 'Aún no hay tickets de soporte.', status: 'Estado', target: 'Fecha objetivo', due: 'Vence',
     createTicket: 'Crear solicitud de soporte', subject: 'Asunto', description: 'Describe el problema o la solicitud', priority: 'Prioridad', normal: 'Normal', high: 'Alta', urgent: 'Urgente',
-    submit: 'Enviar solicitud', created: 'Tu solicitud de soporte fue creada.', signOut: 'Cerrar sesión', startProject: 'Iniciar un proyecto', overview: 'Vista del cliente',
+    submit: 'Enviar solicitud', created: 'Tu solicitud de soporte fue creada.', signOut: 'Cerrar sesión', startProject: 'Iniciar un proyecto', overview: 'Vista del cliente', admin: 'Operaciones',
     nextStep: '¿Listo para el próximo paso?', nextStepText: 'Elige un servicio, responde solo las preguntas pertinentes y recibe una propuesta revisada antes de comenzar.',
     openWorkspace: 'Abrir espacio', secure: 'Espacio seguro', concierge: 'Concierge de proyecto', response: 'Revisión humana antes del pago'
   }
 };
 
-export default function DashboardClient({ name, projects, contracts, invoices, tickets: initialTickets }: Props) {
+export default function DashboardClient({ name, isStaff, projects, contracts, invoices, tickets: initialTickets }: Props) {
   const [lang, setLang] = useState<Lang>('en');
   const [tab, setTab] = useState<Tab>('projects');
   const [tickets, setTickets] = useState(initialTickets);
@@ -97,6 +97,7 @@ export default function DashboardClient({ name, projects, contracts, invoices, t
         </a>
         <nav className="navlinks dashboard-nav" aria-label="Client portal navigation">
           {tabs.map((item) => <button key={item} className={tab === item ? 'nav-active' : ''} onClick={() => setTab(item)}>{t[item]}</button>)}
+          {isStaff && <a href="/admin/intakes" className="admin-nav-link">{t.admin}</a>}
         </nav>
         <div className="top-actions">
           <div className="language-mini">{(['en', 'fr', 'es'] as Lang[]).map((item) => <button key={item} onClick={() => choose(item)} className={item === lang ? 'active' : ''}>{item.toUpperCase()}</button>)}</div>
@@ -109,7 +110,7 @@ export default function DashboardClient({ name, projects, contracts, invoices, t
           <p className="eyebrow">{t.workspace}</p>
           <h1>{t.welcome},<br /><span>{name}.</span></h1>
           <p>{t.lead}</p>
-          <div className="dashboard-hero-actions"><a className="button" href="/start-project">{t.startProject}</a><button className="dashboard-link" onClick={() => setTab('projects')}>{t.openWorkspace} <span>↘</span></button></div>
+          <div className="dashboard-hero-actions"><a className="button" href="/start-project">{t.startProject}</a>{isStaff && <a className="dashboard-link" href="/admin/intakes">{t.admin} <span>↗</span></a>}<button className="dashboard-link" onClick={() => setTab('projects')}>{t.openWorkspace} <span>↘</span></button></div>
         </div>
         <aside className="concierge-card">
           <div className="concierge-index">01 / {t.concierge}</div>
