@@ -1,11 +1,11 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
-  "outputDirectory": null,
-  "crons": [
-    {
-      "path": "/api/notifications/process",
-      "schedule": "0 13 * * *"
-    }
-  ]
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "framework": "nextjs",
+    "outputDirectory": null,
+    "crons": [
+        {
+            "path": "/api/notifications/process",
+            "schedule": "0 13 * * *"
+        }
+    ]
 }
