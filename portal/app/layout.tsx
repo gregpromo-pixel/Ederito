@@ -1,7 +1,9 @@
 import './globals.css';
 import './portal-upgrades.css';
 import './project-intake.css';
+import './intake-enhancer.css';
 import type { Metadata } from 'next';
+import IntakeEnhancer from './IntakeEnhancer';
 
 export const metadata: Metadata = {
   title: 'Ederito Client Portal',
@@ -12,7 +14,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <IntakeEnhancer />
+      </body>
     </html>
   );
 }
