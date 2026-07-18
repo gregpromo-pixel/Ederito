@@ -1,6 +1,7 @@
 import './globals.css';
 import './portal-upgrades.css';
 import './project-intake.css';
+import './intake-enhancer.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 
