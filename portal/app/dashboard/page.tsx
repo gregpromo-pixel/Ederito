@@ -7,8 +7,14 @@ export default async function DashboardPage(){
   const {data:{user}}=await supabase.auth.getUser();
   if(!user) redirect('/login');
 
-  const [{data:profile},{data:projects},{data:contracts},{data:invoices},{data:tickets}] = await Promise.all([
-    supabase.from('profiles').select('full_name,company_name,role').eq('id',user.id).maybeSingle(),
+  let {data:profile}=await supabase.from('profiles').select('full_name,company_name,role').eq('id',user.id).maybeSingle();
+  if(profile && !['admin','staff'].includes(profile.role)){
+    await supabase.rpc('claim_initial_admin');
+    const refreshed=await supabase.from('profiles').select('full_name,company_name,role').eq('id',user.id).maybeSingle();
+    profile=refreshed.data;
+  }
+
+  const [{data:projects},{data:contracts},{data:invoices},{data:tickets}] = await Promise.all([
     supabase.from('projects').select('id,name,status,target_launch_date,free_maintenance_ends_at').eq('client_id',user.id).order('created_at',{ascending:false}),
     supabase.from('contracts').select('id,title,status,contract_number').eq('client_id',user.id).order('created_at',{ascending:false}),
     supabase.from('invoices').select('id,invoice_number,status,total_cents,due_date').eq('client_id',user.id).order('created_at',{ascending:false}),
