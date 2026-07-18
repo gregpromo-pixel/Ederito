@@ -7,6 +7,7 @@ import './client-messages.css';
 import './request-center.css';
 import './sales-workflow.css';
 import './phone-country-code.css';
+import './crm.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import RequestStatusShortcut from './RequestStatusShortcut';
