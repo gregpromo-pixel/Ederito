@@ -5,6 +5,7 @@ import './intake-enhancer.css';
 import './admin-intakes.css';
 import './client-messages.css';
 import './request-center.css';
+import './sales-workflow.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import RequestStatusShortcut from './RequestStatusShortcut';
