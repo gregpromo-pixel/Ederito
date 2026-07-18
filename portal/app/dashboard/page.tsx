@@ -16,5 +16,6 @@ export default async function DashboardPage(){
   ]);
 
   const name=profile?.full_name||user.user_metadata?.full_name||user.email?.split('@')[0]||'Client';
-  return <DashboardClient name={name} projects={projects||[]} contracts={contracts||[]} invoices={invoices||[]} tickets={tickets||[]}/>;
+  const isStaff=['admin','staff'].includes(profile?.role||'');
+  return <DashboardClient name={name} isStaff={isStaff} projects={projects||[]} contracts={contracts||[]} invoices={invoices||[]} tickets={tickets||[]}/>;
 }
