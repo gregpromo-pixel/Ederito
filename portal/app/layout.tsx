@@ -12,4 +12,24 @@ import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import RequestStatusShortcut from './RequestStatusShortcut';
 import SalesWorkflowShortcut from './SalesWorkflowShortcut';
-import PhoneCountryCode
+import PhoneCountryCodeEnhancer from './PhoneCountryCodeEnhancer';
+
+export const metadata: Metadata = {
+  title: 'Ederito Client Portal',
+  description: 'Secure project, contract, invoice and maintenance portal for Ederito clients.',
+  robots: { index: false, follow: false }
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <IntakeEnhancer />
+        <RequestStatusShortcut />
+        <SalesWorkflowShortcut />
+        <PhoneCountryCodeEnhancer />
+      </body>
+    </html>
+  );
+}
