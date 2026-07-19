@@ -1,210 +1,44 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { CSSProperties, FormEvent, ReactNode } from 'react';
 
-type Lang = 'en' | 'fr' | 'es';
-type Plan = {
-  project_title: string;
-  summary: string;
-  recommended_journey: 'website' | 'app' | 'business';
-  recommended_service: string;
-  core_features: string[];
-  questions_to_answer: string[];
-  risks_and_dependencies: string[];
-  recommended_next_step: string;
-};
+type Lang='en'|'fr'|'es'; type Journey='website'|'app'|'business';
+type Plan={project_title:string;summary:string;recommended_journey:Journey;recommended_service:string;core_features:string[];questions_to_answer:string[];risks_and_dependencies:string[];recommended_next_step:string};
+type Option={value:string;label:string;note:string};
 
-const copy = {
-  en: {
-    eyebrow: 'AI project planner',
-    title: 'Turn your idea into a clear project brief.',
-    lead: 'Describe what you want to build. Ederito AI will organize the idea, recommend the right service path, and prepare the next questions for human review.',
-    projectName: 'Project or business name',
-    businessType: 'Business type or industry',
-    description: 'Describe your idea',
-    audience: 'Who is it for?',
-    budget: 'Approximate budget',
-    timeline: 'Preferred timeline',
-    analyze: 'Build my project brief',
-    analyzing: 'Preparing your brief…',
-    summary: 'Project summary',
-    service: 'Recommended Ederito service',
-    features: 'Core features',
-    questions: 'Questions to answer next',
-    risks: 'Dependencies to review',
-    next: 'Recommended next step',
-    continue: 'Continue with this project',
-    dashboard: 'Back to dashboard',
-    disclaimer: 'AI recommendations are preliminary and are reviewed by an Ederito specialist before pricing, contracts, or work begins.',
-    placeholder: 'Example: I want a bilingual booking website for my salon with online deposits, automated reminders, and a customer account area.'
-  },
-  fr: {
-    eyebrow: 'Planificateur de projet IA',
-    title: 'Transformez votre idée en cahier de projet clair.',
-    lead: 'Décrivez ce que vous souhaitez créer. L’IA Ederito organisera l’idée, recommandera le bon service et préparera les prochaines questions pour une révision humaine.',
-    projectName: 'Nom du projet ou de l’entreprise',
-    businessType: 'Type d’entreprise ou secteur',
-    description: 'Décrivez votre idée',
-    audience: 'À qui s’adresse le projet ?',
-    budget: 'Budget approximatif',
-    timeline: 'Délai souhaité',
-    analyze: 'Créer mon cahier de projet',
-    analyzing: 'Préparation de votre cahier…',
-    summary: 'Résumé du projet',
-    service: 'Service Ederito recommandé',
-    features: 'Fonctionnalités principales',
-    questions: 'Questions à préciser',
-    risks: 'Dépendances à examiner',
-    next: 'Prochaine étape recommandée',
-    continue: 'Continuer avec ce projet',
-    dashboard: 'Retour au tableau de bord',
-    disclaimer: 'Les recommandations de l’IA sont préliminaires et sont révisées par un spécialiste Ederito avant tout prix, contrat ou début de travail.',
-    placeholder: 'Exemple : je veux un site bilingue de réservation pour mon salon avec acomptes en ligne, rappels automatiques et espace client.'
-  },
-  es: {
-    eyebrow: 'Planificador de proyectos con IA',
-    title: 'Convierte tu idea en un plan de proyecto claro.',
-    lead: 'Describe lo que quieres crear. La IA de Ederito organizará la idea, recomendará el servicio correcto y preparará las próximas preguntas para revisión humana.',
-    projectName: 'Nombre del proyecto o negocio',
-    businessType: 'Tipo de negocio o industria',
-    description: 'Describe tu idea',
-    audience: '¿Para quién es?',
-    budget: 'Presupuesto aproximado',
-    timeline: 'Plazo preferido',
-    analyze: 'Crear mi plan de proyecto',
-    analyzing: 'Preparando tu plan…',
-    summary: 'Resumen del proyecto',
-    service: 'Servicio de Ederito recomendado',
-    features: 'Funciones principales',
-    questions: 'Preguntas para responder',
-    risks: 'Dependencias a revisar',
-    next: 'Próximo paso recomendado',
-    continue: 'Continuar con este proyecto',
-    dashboard: 'Volver al panel',
-    disclaimer: 'Las recomendaciones de IA son preliminares y serán revisadas por un especialista de Ederito antes de establecer precios, contratos o comenzar el trabajo.',
-    placeholder: 'Ejemplo: quiero un sitio bilingüe de reservas para mi salón con depósitos en línea, recordatorios automáticos y un área para clientes.'
-  }
-};
+const copy={
+ en:{eyebrow:'Ederito intelligence studio',title:'Turn your idea into a launch-ready project brief.',lead:'Describe your vision once. Ederito AI structures the opportunity, recommends the right service, and prepares a professional brief for expert review.',back:'Back to dashboard',proof:['Structured brief','Service recommendation','Human review before pricing'],identity:'Project identity',identityText:'Give the idea a clear business context.',name:'Project or business name',namePh:'Example: Maison Kreyòl',industry:'Industry or business type',industryPh:'Beauty, events, consulting, retail…',vision:'The vision',visionText:'Explain the result you want, not only the technology.',idea:'What do you want to create?',ideaPh:'Example: I want a bilingual booking website for my salon with online deposits, automated reminders, and a private customer account area.',add:'Add a requirement',chips:['Online payments','Multilingual support','Customer accounts','Booking system','Admin dashboard'],fit:'Business fit',fitText:'Help the brief reflect your audience, investment range, and urgency.',audience:'Who should use or buy this?',audiencePh:'Describe the ideal customer or user',budget:'Investment range',timeline:'Preferred timeline',budgets:[['500-2000','$500–$2,000','Focused launch'],['2000-5000','$2,000–$5,000','Growth build'],['5000-10000','$5,000–$10,000','Advanced scope'],['10000-plus','$10,000+','Custom product'],['guidance','Need guidance','Recommend a range']],times:[['asap','As soon as possible','Priority review'],['2-4-weeks','2–4 weeks','Fast launch'],['1-2-months','1–2 months','Planned delivery'],['flexible','Flexible','Quality first']],generate:'Generate AI brief',generating:'Building your project brief…',disclaimer:'AI organizes the project. Final scope, pricing, feasibility, and delivery are confirmed by Ederito after human review.',preview:'Live strategy preview',previewTitle:'Your brief is taking shape.',previewEmpty:'Add details on the left to build a live summary and recommendation.',readiness:'Brief readiness',early:'Early idea',shaping:'Taking shape',ready:'Ready for review',path:'Likely path',service:'Likely service',missing:'Still useful to add',complete:'The brief has the core information needed for AI analysis.',untitled:'Untitled project',missingLabels:['Project name','Industry or business type','Target audience','Investment range','Preferred timeline'],journeys:{website:'Web presence',app:'Digital product',business:'Business formation'},services:{website:'Website Development',app:'Custom App or AI Product',business:'Business Formation Assistance'},result:'Ederito AI brief',waiting:'Your generated brief will appear here.',waitingText:'AI will return the project summary, core features, open questions, risks, and recommended next step.',summary:'Project summary',recommended:'Recommended Ederito service',features:'Core features',questions:'Questions to answer next',risks:'Dependencies to review',next:'Recommended next step',continue:'Continue with this project',error:'Unable to prepare the project brief. Please review the information and try again.'},
+ fr:{eyebrow:'Studio d’intelligence Ederito',title:'Transformez votre idée en cahier de projet prêt à lancer.',lead:'Décrivez votre vision une seule fois. L’IA Ederito structure l’opportunité, recommande le bon service et prépare un cahier professionnel pour une révision experte.',back:'Retour au tableau de bord',proof:['Cahier structuré','Recommandation de service','Révision humaine avant le prix'],identity:'Identité du projet',identityText:'Donnez à l’idée un contexte commercial clair.',name:'Nom du projet ou de l’entreprise',namePh:'Exemple : Maison Kreyòl',industry:'Secteur ou type d’entreprise',industryPh:'Beauté, événements, conseil, commerce…',vision:'La vision',visionText:'Expliquez le résultat souhaité, pas seulement la technologie.',idea:'Que souhaitez-vous créer ?',ideaPh:'Exemple : je veux un site bilingue de réservation pour mon salon avec acomptes en ligne, rappels automatiques et espace client privé.',add:'Ajouter un besoin',chips:['Paiements en ligne','Support multilingue','Comptes clients','Système de réservation','Tableau de bord admin'],fit:'Contexte commercial',fitText:'Aidez le cahier à refléter votre audience, votre investissement et votre urgence.',audience:'Qui doit utiliser ou acheter ce produit ?',audiencePh:'Décrivez le client ou l’utilisateur idéal',budget:'Fourchette d’investissement',timeline:'Délai souhaité',budgets:[['500-2000','500 $–2 000 $','Lancement ciblé'],['2000-5000','2 000 $–5 000 $','Projet de croissance'],['5000-10000','5 000 $–10 000 $','Périmètre avancé'],['10000-plus','10 000 $ et +','Produit sur mesure'],['guidance','Besoin de conseils','Recommander un budget']],times:[['asap','Dès que possible','Révision prioritaire'],['2-4-weeks','2–4 semaines','Lancement rapide'],['1-2-months','1–2 mois','Livraison planifiée'],['flexible','Flexible','Priorité à la qualité']],generate:'Générer le cahier IA',generating:'Création de votre cahier…',disclaimer:'L’IA organise le projet. Le périmètre, le prix, la faisabilité et la livraison sont confirmés par Ederito après une révision humaine.',preview:'Aperçu stratégique en direct',previewTitle:'Votre cahier prend forme.',previewEmpty:'Ajoutez des détails à gauche pour créer un résumé et une recommandation en direct.',readiness:'Niveau de préparation',early:'Idée initiale',shaping:'En structuration',ready:'Prêt pour révision',path:'Parcours probable',service:'Service probable',missing:'Informations encore utiles',complete:'Le cahier contient les informations essentielles pour l’analyse IA.',untitled:'Projet sans nom',missingLabels:['Nom du projet','Secteur ou type d’entreprise','Audience cible','Fourchette d’investissement','Délai souhaité'],journeys:{website:'Présence web',app:'Produit numérique',business:'Création d’entreprise'},services:{website:'Développement de site web',app:'Application ou produit IA sur mesure',business:'Assistance à la création d’entreprise'},result:'Cahier Ederito IA',waiting:'Votre cahier généré apparaîtra ici.',waitingText:'L’IA présentera le résumé, les fonctionnalités, les questions ouvertes, les risques et la prochaine étape.',summary:'Résumé du projet',recommended:'Service Ederito recommandé',features:'Fonctionnalités principales',questions:'Questions à préciser',risks:'Dépendances à examiner',next:'Prochaine étape recommandée',continue:'Continuer avec ce projet',error:'Impossible de préparer le cahier. Vérifiez les informations et réessayez.'},
+ es:{eyebrow:'Estudio de inteligencia Ederito',title:'Convierte tu idea en un plan listo para lanzar.',lead:'Describe tu visión una sola vez. La IA de Ederito estructura la oportunidad, recomienda el servicio correcto y prepara un plan profesional para revisión experta.',back:'Volver al panel',proof:['Plan estructurado','Recomendación de servicio','Revisión humana antes del precio'],identity:'Identidad del proyecto',identityText:'Dale a la idea un contexto comercial claro.',name:'Nombre del proyecto o negocio',namePh:'Ejemplo: Maison Kreyòl',industry:'Industria o tipo de negocio',industryPh:'Belleza, eventos, consultoría, comercio…',vision:'La visión',visionText:'Explica el resultado que buscas, no solo la tecnología.',idea:'¿Qué quieres crear?',ideaPh:'Ejemplo: quiero un sitio bilingüe de reservas para mi salón con depósitos en línea, recordatorios automáticos y un área privada para clientes.',add:'Agregar un requisito',chips:['Pagos en línea','Soporte multilingüe','Cuentas de clientes','Sistema de reservas','Panel administrativo'],fit:'Ajuste comercial',fitText:'Ayuda a que el plan refleje tu audiencia, inversión y urgencia.',audience:'¿Quién debe usar o comprar esto?',audiencePh:'Describe al cliente o usuario ideal',budget:'Rango de inversión',timeline:'Plazo preferido',budgets:[['500-2000','$500–$2,000','Lanzamiento enfocado'],['2000-5000','$2,000–$5,000','Proyecto de crecimiento'],['5000-10000','$5,000–$10,000','Alcance avanzado'],['10000-plus','$10,000+','Producto personalizado'],['guidance','Necesito orientación','Recomendar un rango']],times:[['asap','Lo antes posible','Revisión prioritaria'],['2-4-weeks','2–4 semanas','Lanzamiento rápido'],['1-2-months','1–2 meses','Entrega planificada'],['flexible','Flexible','Calidad primero']],generate:'Generar plan con IA',generating:'Creando tu plan…',disclaimer:'La IA organiza el proyecto. El alcance, precio, viabilidad y entrega finales son confirmados por Ederito después de una revisión humana.',preview:'Vista estratégica en vivo',previewTitle:'Tu plan está tomando forma.',previewEmpty:'Agrega detalles a la izquierda para crear un resumen y una recomendación en vivo.',readiness:'Preparación del plan',early:'Idea inicial',shaping:'Tomando forma',ready:'Listo para revisión',path:'Ruta probable',service:'Servicio probable',missing:'Información aún útil',complete:'El plan contiene la información esencial para el análisis con IA.',untitled:'Proyecto sin nombre',missingLabels:['Nombre del proyecto','Industria o tipo de negocio','Audiencia objetivo','Rango de inversión','Plazo preferido'],journeys:{website:'Presencia web',app:'Producto digital',business:'Formación empresarial'},services:{website:'Desarrollo de sitio web',app:'Aplicación o producto de IA personalizado',business:'Asistencia para formar una empresa'},result:'Plan Ederito IA',waiting:'Tu plan generado aparecerá aquí.',waitingText:'La IA mostrará el resumen, las funciones, las preguntas abiertas, los riesgos y el próximo paso.',summary:'Resumen del proyecto',recommended:'Servicio de Ederito recomendado',features:'Funciones principales',questions:'Preguntas para responder',risks:'Dependencias a revisar',next:'Próximo paso recomendado',continue:'Continuar con este proyecto',error:'No fue posible preparar el plan. Revisa la información e inténtalo de nuevo.'}
+} as const;
 
-export default function AIPlannerClient() {
-  const [lang, setLang] = useState<Lang>('en');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [plan, setPlan] = useState<Plan | null>(null);
-  const t = copy[lang];
+const appWords=['app','application','mobile','ios','android','platform','portal','dashboard','saas','marketplace','chat','aplicación'];
+const businessWords=['llc','ein','business formation','company formation','création d’entreprise','crear una empresa','formación empresarial'];
+const opts=(rows:readonly (readonly string[])[]):Option[]=>rows.map(([value,label,note])=>({value,label,note}));
 
-  useEffect(() => {
-    const saved = localStorage.getItem('ederito-portal-language') as Lang | null;
-    if (saved && ['en', 'fr', 'es'].includes(saved)) setLang(saved);
-  }, []);
-
-  function chooseLanguage(next: Lang) {
-    setLang(next);
-    localStorage.setItem('ederito-portal-language', next);
-  }
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setBusy(true);
-    setError('');
-    setPlan(null);
-
-    const form = new FormData(event.currentTarget);
-    const response = await fetch('/api/ai/project-planner', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        language: lang,
-        projectName: form.get('projectName'),
-        businessType: form.get('businessType'),
-        description: form.get('description'),
-        audience: form.get('audience'),
-        budget: form.get('budget'),
-        timeline: form.get('timeline')
-      })
-    });
-
-    const result = (await response.json()) as { plan?: Plan; error?: string };
-    if (!response.ok || !result.plan) setError(result.error || 'Unable to prepare the project brief.');
-    else setPlan(result.plan);
-    setBusy(false);
-  }
-
-  const nextUrl = plan ? `/start-project?journey=${encodeURIComponent(plan.recommended_journey)}&service=${encodeURIComponent(plan.recommended_service)}` : '/start-project';
-
-  return (
-    <main className="shell portal ai-planner-page">
-      <header className="topbar ai-planner-topbar">
-        <Link className="brand" href="/dashboard">
-          <img className="brand-logo" src="https://ederito.com/assets/eder-logo.png" alt="Ederito logo" />
-          <span>EDERITO AI</span>
-        </Link>
-        <div className="ai-planner-actions">
-          <div className="language-mini">
-            {(['en', 'fr', 'es'] as Lang[]).map((code) => (
-              <button type="button" key={code} className={lang === code ? 'active' : ''} onClick={() => chooseLanguage(code)}>
-                {code.toUpperCase()}
-              </button>
-            ))}
-          </div>
-          <Link className="button secondary" href="/dashboard">{t.dashboard}</Link>
-        </div>
-      </header>
-
-      <section className="ai-planner-hero">
-        <div>
-          <p className="eyebrow">{t.eyebrow}</p>
-          <h1>{t.title}</h1>
-          <p>{t.lead}</p>
-        </div>
-        <div className="ai-planner-proof">
-          <span>01 · Structured brief</span>
-          <span>02 · Service recommendation</span>
-          <span>03 · Human review</span>
-        </div>
-      </section>
-
-      <div className="ai-planner-layout">
-        <form className="ai-planner-form" onSubmit={submit}>
-          <label className="field"><span>{t.projectName}</span><input name="projectName" maxLength={120} /></label>
-          <label className="field"><span>{t.businessType}</span><input name="businessType" maxLength={120} /></label>
-          <label className="field full"><span>{t.description}</span><textarea name="description" rows={8} minLength={25} maxLength={4000} placeholder={t.placeholder} required /></label>
-          <label className="field"><span>{t.audience}</span><input name="audience" maxLength={300} /></label>
-          <label className="field"><span>{t.budget}</span><input name="budget" maxLength={100} placeholder="$500–$2,000" /></label>
-          <label className="field full"><span>{t.timeline}</span><input name="timeline" maxLength={120} /></label>
-          {error && <div className="notice error full">{error}</div>}
-          <button className="button full" disabled={busy}>{busy ? t.analyzing : t.analyze}</button>
-          <p className="ai-disclaimer full">{t.disclaimer}</p>
-        </form>
-
-        <section className={`ai-plan-result ${plan ? 'ready' : ''}`}>
-          {!plan ? (
-            <div className="ai-plan-empty">
-              <span>AI</span>
-              <h2>{t.summary}</h2>
-              <p>{t.disclaimer}</p>
-            </div>
-          ) : (
-            <>
-              <p className="eyebrow">{t.summary}</p>
-              <h2>{plan.project_title}</h2>
-              <p className="ai-summary">{plan.summary}</p>
-              <div className="ai-recommendation"><small>{t.service}</small><strong>{plan.recommended_service}</strong></div>
-              <ResultList title={t.features} items={plan.core_features} />
-              <ResultList title={t.questions} items={plan.questions_to_answer} />
-              <ResultList title={t.risks} items={plan.risks_and_dependencies} />
-              <div className="ai-next-step"><small>{t.next}</small><p>{plan.recommended_next_step}</p></div>
-              <Link className="button" href={nextUrl}>{t.continue}</Link>
-            </>
-          )}
-        </section>
-      </div>
-    </main>
-  );
+export default function AIPlannerClient(){
+ const [lang,setLang]=useState<Lang>('en'); const [name,setName]=useState(''); const [industry,setIndustry]=useState(''); const [idea,setIdea]=useState(''); const [audience,setAudience]=useState(''); const [budget,setBudget]=useState(''); const [timeline,setTimeline]=useState(''); const [busy,setBusy]=useState(false); const [error,setError]=useState(''); const [plan,setPlan]=useState<Plan|null>(null); const t=copy[lang];
+ useEffect(()=>{const saved=localStorage.getItem('ederito-portal-language') as Lang|null;if(saved&&['en','fr','es'].includes(saved))setLang(saved)},[]);
+ const score=(name?15:0)+(industry?10:0)+(idea.trim().length>=25?35:0)+(audience?15:0)+(budget?15:0)+(timeline?10:0);
+ const journey=useMemo<Journey>(()=>{const text=`${industry} ${idea}`.toLowerCase();if(businessWords.some(x=>text.includes(x)))return'business';if(appWords.some(x=>text.includes(x)))return'app';return'website'},[industry,idea]);
+ const missing=[!name&&t.missingLabels[0],!industry&&t.missingLabels[1],!audience&&t.missingLabels[2],!budget&&t.missingLabels[3],!timeline&&t.missingLabels[4]].filter(Boolean) as string[];
+ const state=score>=75?t.ready:score>=35?t.shaping:t.early; const budgetLabel=opts(t.budgets).find(x=>x.value===budget)?.label||''; const timeLabel=opts(t.times).find(x=>x.value===timeline)?.label||'';
+ function choose(next:Lang){setLang(next);localStorage.setItem('ederito-portal-language',next)}
+ function chip(value:string){setIdea(v=>v.toLowerCase().includes(value.toLowerCase())?v:(v.trim()?`${v.trim()} ${value}.`:`${value}.`))}
+ async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();if(idea.trim().length<25)return;setBusy(true);setError('');setPlan(null);try{const r=await fetch('/api/ai/project-planner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({language:lang,projectName:name,businessType:industry,description:idea,audience,budget:budgetLabel||budget,timeline:timeLabel||timeline})});const data=await r.json() as {plan?:Plan;error?:string};if(!r.ok||!data.plan)setError(data.error||t.error);else setPlan(data.plan)}catch{setError(t.error)}finally{setBusy(false)}}
+ const nextUrl=plan?`/start-project?journey=${encodeURIComponent(plan.recommended_journey)}&service=${encodeURIComponent(plan.recommended_service)}`:'/start-project';
+ return <main className="shell portal ai-planner-page"><header className="topbar ai-planner-topbar"><Link className="brand ai-brand" href="/dashboard"><img className="brand-logo" src="https://ederito.com/assets/eder-logo.png" alt="Ederito logo"/><span>EDERITO</span><em>AI STUDIO</em></Link><div className="ai-planner-actions"><div className="language-mini">{(['en','fr','es'] as Lang[]).map(x=><button type="button" key={x} className={lang===x?'active':''} onClick={()=>choose(x)}>{x.toUpperCase()}</button>)}</div><Link className="button secondary" href="/dashboard">{t.back}</Link></div></header>
+ <section className="ai-planner-hero"><div><p className="eyebrow"><i/>{t.eyebrow}</p><h1>{t.title}</h1><p>{t.lead}</p></div><div className="ai-planner-proof">{t.proof.map((x,i)=><article key={x}><small>0{i+1}</small><span>{x}</span><b>↗</b></article>)}</div></section>
+ <div className="ai-planner-layout"><form className="ai-planner-form" onSubmit={submit}><Chapter n="01" title={t.identity} text={t.identityText}><div className="ai-field-grid"><Field label={t.name}><input value={name} onChange={e=>setName(e.target.value)} placeholder={t.namePh} maxLength={120}/></Field><Field label={t.industry}><input value={industry} onChange={e=>setIndustry(e.target.value)} placeholder={t.industryPh} maxLength={120}/></Field></div></Chapter>
+ <Chapter n="02" title={t.vision} text={t.visionText}><Field label={t.idea} cls="ai-vision-field"><textarea value={idea} onChange={e=>setIdea(e.target.value)} placeholder={t.ideaPh} minLength={25} maxLength={4000} required/><small>{idea.length.toLocaleString()} / 4,000</small></Field><div className="ai-prompt-row"><p>{t.add}</p><div>{t.chips.map(x=><button type="button" key={x} onClick={()=>chip(x)}>＋ {x}</button>)}</div></div></Chapter>
+ <Chapter n="03" title={t.fit} text={t.fitText}><Field label={t.audience}><input value={audience} onChange={e=>setAudience(e.target.value)} placeholder={t.audiencePh} maxLength={300}/></Field><Cards title={t.budget} options={opts(t.budgets)} value={budget} set={setBudget}/><Cards title={t.timeline} options={opts(t.times)} value={timeline} set={setTimeline}/></Chapter>
+ {error&&<div className="notice error ai-planner-error">{error}</div>}<div className="ai-submit-panel"><div><span>{score}%</span><p>{state}</p></div><button className="button ai-generate-button" disabled={busy||idea.trim().length<25}><span>{busy?t.generating:t.generate}</span><b>{busy?'···':'↗'}</b></button><p>{t.disclaimer}</p></div></form>
+ <aside className="ai-preview-column"><section className="ai-live-preview"><header><div><p className="eyebrow"><i/>{t.preview}</p><h2>{t.previewTitle}</h2></div><div className="ai-score-ring" style={{'--score':score} as CSSProperties}><strong>{score}</strong><small>%</small></div></header><div className="ai-preview-project"><small>{t.readiness} · {state}</small><h3>{name||t.untitled}</h3><p>{idea?`${idea.slice(0,210)}${idea.length>210?'…':''}`:t.previewEmpty}</p>{(industry||audience)&&<div className="ai-preview-tags">{industry&&<span>{industry}</span>}{audience&&<span>{audience}</span>}</div>}</div><div className="ai-path-grid"><article><small>{t.path}</small><strong>{t.journeys[journey]}</strong></article><article><small>{t.service}</small><strong>{t.services[journey]}</strong></article></div>{(budgetLabel||timeLabel)&&<div className="ai-selected-facts">{budgetLabel&&<span>{budgetLabel}</span>}{timeLabel&&<span>{timeLabel}</span>}</div>}<div className="ai-missing-list"><h4>{t.missing}</h4>{missing.length?<ul>{missing.map(x=><li key={x}><span/>{x}</li>)}</ul>:<p className="ai-complete"><b>✓</b>{t.complete}</p>}</div></section>
+ {!plan?<section className="ai-generated-placeholder"><div className="ai-orb"><span>AI</span><i/><i/><i/></div><p className="eyebrow">{t.result}</p><h2>{t.waiting}</h2><p>{t.waitingText}</p></section>:<section className="ai-plan-result"><p className="eyebrow">{t.result}</p><h2>{plan.project_title}</h2><p className="ai-summary">{plan.summary}</p><div className="ai-recommendation"><small>{t.recommended}</small><strong>{plan.recommended_service}</strong></div><List title={t.features} items={plan.core_features}/><List title={t.questions} items={plan.questions_to_answer}/><List title={t.risks} items={plan.risks_and_dependencies}/><div className="ai-next-step"><small>{t.next}</small><p>{plan.recommended_next_step}</p></div><Link className="button" href={nextUrl}>{t.continue}<span>↗</span></Link></section>}</aside></div></main>
 }
-
-function ResultList({ title, items }: { title: string; items: string[] }) {
-  if (!items.length) return null;
-  return <div className="ai-result-list"><h3>{title}</h3><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul></div>;
-}
+function Chapter({n,title,text,children}:{n:string;title:string;text:string;children:ReactNode}){return <section className="ai-form-chapter"><header><span>{n}</span><div><h2>{title}</h2><p>{text}</p></div></header><div className="ai-chapter-content">{children}</div></section>}
+function Field({label,cls='',children}:{label:string;cls?:string;children:ReactNode}){return <label className={`field ${cls}`}><span>{label}</span>{children}</label>}
+function Cards({title,options,value,set}:{title:string;options:Option[];value:string;set:(v:string)=>void}){return <fieldset className="ai-choice-field"><legend>{title}</legend><div>{options.map(x=><button type="button" key={x.value} className={value===x.value?'selected':''} onClick={()=>set(x.value)}><span>{x.label}</span><small>{x.note}</small><i/></button>)}</div></fieldset>}
+function List({title,items}:{title:string;items:string[]}){if(!items.length)return null;return <div className="ai-result-list"><h3>{title}</h3><ul>{items.map((x,i)=><li key={`${x}-${i}`}><span>0{i+1}</span><p>{x}</p></li>)}</ul></div>}
