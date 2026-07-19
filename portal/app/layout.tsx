@@ -8,6 +8,7 @@ import './request-center.css';
 import './sales-workflow.css';
 import './phone-country-code.css';
 import './crm.css';
+import './ai-planner.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import RequestStatusShortcut from './RequestStatusShortcut';
@@ -16,6 +17,7 @@ import PhoneCountryCodeEnhancer from './PhoneCountryCodeEnhancer';
 import StartProjectTranslations from './StartProjectTranslations';
 import ProjectJourneyPrefill from './ProjectJourneyPrefill';
 import AuthContinuation from './AuthContinuation';
+import AIPlannerShortcut from './AIPlannerShortcut';
 
 export const metadata: Metadata = {
   title: 'Ederito Client Portal',
@@ -32,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <StartProjectTranslations />
         <ProjectJourneyPrefill />
         <AuthContinuation />
+        <AIPlannerShortcut />
         <RequestStatusShortcut />
         <SalesWorkflowShortcut />
         <PhoneCountryCodeEnhancer />
