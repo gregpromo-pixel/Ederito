@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 type Lang = 'en' | 'fr' | 'es';
@@ -11,17 +11,34 @@ const text = {
   es: { eyebrow:'Acceso seguro para clientes', title:'Todo sobre tu proyecto, en un solo lugar.', lead:'Consulta proyectos, contratos, facturas, mantenimiento y soporte.', signIn:'Iniciar sesión', register:'Crear cuenta', name:'Nombre completo', email:'Correo electrónico', password:'Contraseña', submitIn:'Continuar de forma segura', submitUp:'Crear cuenta segura', switchUp:'¿Nuevo en Ederito?', switchIn:'¿Ya tienes una cuenta?', verify:'Revisa tu correo para verificar la cuenta.', forgot:'¿Olvidaste tu contraseña?' }
 };
 
+function safeNext(value: string | null) {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/dashboard';
+  return value;
+}
+
 export default function LoginPage() {
   const [lang, setLang] = useState<Lang>('en');
   const [mode, setMode] = useState<'signin'|'register'>('signin');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string>('');
+  const [nextPath, setNextPath] = useState('/dashboard');
   const t = text[lang];
 
   useEffect(() => {
     const saved = localStorage.getItem('ederito-portal-language') as Lang | null;
     if (saved && ['en','fr','es'].includes(saved)) setLang(saved);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'register') setMode('register');
+    const requestedNext = safeNext(params.get('next'));
+    setNextPath(requestedNext);
+    if (requestedNext !== '/dashboard') localStorage.setItem('ederito-pending-project-path', requestedNext);
   }, []);
+
+  const confirmationUrl = useMemo(() => {
+    const encodedNext = encodeURIComponent(nextPath);
+    return `${typeof window === 'undefined' ? '' : window.location.origin}/dashboard?next=${encodedNext}`;
+  }, [nextPath]);
 
   function choose(next: Lang) {
     setLang(next);
@@ -42,13 +59,13 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: fullName }, emailRedirectTo: `${window.location.origin}/dashboard` }
+        options: { data: { full_name: fullName }, emailRedirectTo: confirmationUrl }
       });
       setMessage(error ? error.message : t.verify);
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setMessage(error.message);
-      else window.location.href = '/dashboard';
+      else window.location.href = nextPath;
     }
     setBusy(false);
   }
@@ -61,7 +78,7 @@ export default function LoginPage() {
       <p className="lead">{t.lead}</p>
     </section>
     <section className="card">
-      <div className="switch"><strong>{mode === 'signin' ? t.signIn : t.register}</strong><span>{(['en','fr','es'] as Lang[]).map(code => <button key={code} onClick={() => choose(code)} style={{marginLeft:10,fontWeight:code === lang ? 800 : 500}}>{code.toUpperCase()}</button>)}</span></div>
+      <div className="switch"><strong>{mode === 'signin' ? t.signIn : t.register}</strong><span>{(['en','fr','es'] as Lang[]).map(code => <button type="button" key={code} onClick={() => choose(code)} style={{marginLeft:10,fontWeight:code === lang ? 800 : 500}}>{code.toUpperCase()}</button>)}</span></div>
       <form className="form" onSubmit={submit}>
         {mode === 'register' && <label className="field"><span>{t.name}</span><input name="fullName" required minLength={2} maxLength={100}/></label>}
         <label className="field"><span>{t.email}</span><input name="email" type="email" required autoComplete="email"/></label>
@@ -70,7 +87,7 @@ export default function LoginPage() {
         {message && <div className="notice">{message}</div>}
         <button className="button" disabled={busy}>{busy ? '…' : mode === 'signin' ? t.submitIn : t.submitUp}</button>
       </form>
-      <p className="switch" style={{marginTop:20}}><span>{mode === 'signin' ? t.switchUp : t.switchIn}</span><button onClick={() => { setMode(mode === 'signin' ? 'register' : 'signin'); setMessage(''); }}>{mode === 'signin' ? t.register : t.signIn}</button></p>
+      <p className="switch" style={{marginTop:20}}><span>{mode === 'signin' ? t.switchUp : t.switchIn}</span><button type="button" onClick={() => { setMode(mode === 'signin' ? 'register' : 'signin'); setMessage(''); }}>{mode === 'signin' ? t.register : t.signIn}</button></p>
     </section>
   </main>;
 }
