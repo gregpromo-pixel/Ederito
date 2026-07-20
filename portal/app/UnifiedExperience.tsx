@@ -49,7 +49,7 @@ export default function UnifiedExperience() {
     setLang(next);
     persistLanguage(next);
     window.dispatchEvent(new CustomEvent('ederito:language', { detail: next }));
-    const localControl = document.querySelector<HTMLElement>(`[data-portal-language="${next}"]`);
+    const localControl = Array.from(document.querySelectorAll<HTMLButtonElement>('.language-mini button,.switch button')).find(button => button.textContent?.trim().toLowerCase() === next);
     localControl?.click();
   }
 
