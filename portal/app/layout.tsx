@@ -9,6 +9,7 @@ import './sales-workflow.css';
 import './phone-country-code.css';
 import './crm.css';
 import './ai-planner.css';
+import './unified-experience.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import RequestStatusShortcut from './RequestStatusShortcut';
@@ -18,6 +19,7 @@ import StartProjectTranslations from './StartProjectTranslations';
 import ProjectJourneyPrefill from './ProjectJourneyPrefill';
 import AuthContinuation from './AuthContinuation';
 import AIPlannerShortcut from './AIPlannerShortcut';
+import UnifiedExperience from './UnifiedExperience';
 
 export const metadata: Metadata = {
   title: 'Ederito Client Portal',
@@ -30,6 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         {children}
+        <UnifiedExperience />
         <IntakeEnhancer />
         <StartProjectTranslations />
         <ProjectJourneyPrefill />
