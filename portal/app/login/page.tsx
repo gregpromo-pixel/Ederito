@@ -24,6 +24,8 @@ function persistLanguage(language: Lang) {
   localStorage.setItem('ederito-language', language);
   localStorage.setItem('ederito-portal-language', language);
   document.cookie = `ederito-language=${language}; Max-Age=31536000; Path=/; Domain=.ederito.com; SameSite=Lax; Secure`;
+  document.documentElement.lang = language;
+  document.documentElement.dataset.lang = language;
 }
 
 export default function LoginPage() {
@@ -45,17 +47,21 @@ export default function LoginPage() {
     const requestedNext = safeNext(params.get('next'));
     setNextPath(requestedNext);
     if (requestedNext !== '/dashboard') localStorage.setItem('ederito-pending-project-path', requestedNext);
+
+    const onLanguage = (event: Event) => {
+      const next = (event as CustomEvent<Lang>).detail;
+      if (!['en','fr','es'].includes(next)) return;
+      setLang(next);
+      persistLanguage(next);
+    };
+    window.addEventListener('ederito:language', onLanguage as EventListener);
+    return () => window.removeEventListener('ederito:language', onLanguage as EventListener);
   }, []);
 
   const confirmationUrl = useMemo(() => {
     const encodedNext = encodeURIComponent(nextPath);
     return `${typeof window === 'undefined' ? '' : window.location.origin}/dashboard?next=${encodedNext}`;
   }, [nextPath]);
-
-  function choose(next: Lang) {
-    setLang(next);
-    persistLanguage(next);
-  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -84,13 +90,12 @@ export default function LoginPage() {
 
   return <main className="shell auth-layout">
     <section className="auth-copy">
-      <div className="brand"><img className="brand-logo" src="https://ederito.com/assets/eder-logo.png" alt="Ederito logo"/><span>EDERITO PORTAL</span></div>
-      <p className="eyebrow" style={{marginTop:64}}>{t.eyebrow}</p>
+      <p className="eyebrow">{t.eyebrow}</p>
       <h1 className="hero-title">{t.title}</h1>
       <p className="lead">{t.lead}</p>
     </section>
     <section className="card">
-      <div className="switch"><strong>{mode === 'signin' ? t.signIn : t.register}</strong><span>{(['en','fr','es'] as Lang[]).map(code => <button type="button" key={code} onClick={() => choose(code)} style={{marginLeft:10,fontWeight:code === lang ? 800 : 500}}>{code.toUpperCase()}</button>)}</span></div>
+      <div className="switch"><strong>{mode === 'signin' ? t.signIn : t.register}</strong></div>
       <form className="form" onSubmit={submit}>
         {mode === 'register' && <label className="field"><span>{t.name}</span><input name="fullName" required minLength={2} maxLength={100}/></label>}
         <label className="field"><span>{t.email}</span><input name="email" type="email" required autoComplete="email"/></label>
