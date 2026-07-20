@@ -16,6 +16,16 @@ function safeNext(value: string | null) {
   return value;
 }
 
+function sharedLanguage(): Lang | null {
+  return document.cookie.match(/(?:^|; )ederito-language=(en|fr|es)/)?.[1] as Lang | null;
+}
+
+function persistLanguage(language: Lang) {
+  localStorage.setItem('ederito-language', language);
+  localStorage.setItem('ederito-portal-language', language);
+  document.cookie = `ederito-language=${language}; Max-Age=31536000; Path=/; Domain=.ederito.com; SameSite=Lax; Secure`;
+}
+
 export default function LoginPage() {
   const [lang, setLang] = useState<Lang>('en');
   const [mode, setMode] = useState<'signin'|'register'>('signin');
@@ -25,8 +35,10 @@ export default function LoginPage() {
   const t = text[lang];
 
   useEffect(() => {
-    const saved = localStorage.getItem('ederito-portal-language') as Lang | null;
-    if (saved && ['en','fr','es'].includes(saved)) setLang(saved);
+    const saved = (localStorage.getItem('ederito-portal-language') || localStorage.getItem('ederito-language')) as Lang | null;
+    const nextLanguage = sharedLanguage() || (saved && ['en','fr','es'].includes(saved) ? saved : 'en');
+    setLang(nextLanguage);
+    persistLanguage(nextLanguage);
 
     const params = new URLSearchParams(window.location.search);
     if (params.get('mode') === 'register') setMode('register');
@@ -42,7 +54,7 @@ export default function LoginPage() {
 
   function choose(next: Lang) {
     setLang(next);
-    localStorage.setItem('ederito-portal-language', next);
+    persistLanguage(next);
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {

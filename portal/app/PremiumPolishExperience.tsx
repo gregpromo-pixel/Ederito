@@ -14,6 +14,14 @@ function normalize(value: string | null): Language | null {
   return supported.includes(value as Language) ? (value as Language) : null;
 }
 
+function persistLanguage(language: Language) {
+  localStorage.setItem('ederito-language', language);
+  localStorage.setItem('ederito-portal-language', language);
+  document.cookie = `ederito-language=${language}; Max-Age=31536000; Path=/; Domain=.ederito.com; SameSite=Lax; Secure`;
+  document.documentElement.lang = language;
+  document.documentElement.dataset.lang = language;
+}
+
 export default function PremiumPolishExperience() {
   useEffect(() => {
     const root = document.documentElement;
@@ -29,10 +37,22 @@ export default function PremiumPolishExperience() {
 
     const syncLanguage = () => {
       const selected = normalize(cookie('ederito-language')) || normalize(localStorage.getItem('ederito-portal-language')) || normalize(localStorage.getItem('ederito-language')) || 'en';
-      root.lang = selected;
-      root.dataset.lang = selected;
-      localStorage.setItem('ederito-language', selected);
-      localStorage.setItem('ederito-portal-language', selected);
+      persistLanguage(selected);
+    };
+
+    const onLanguageClick = (event: MouseEvent) => {
+      const button = (event.target as HTMLElement | null)?.closest('button');
+      if (!button) return;
+      const label = button.textContent?.trim().toLowerCase() || '';
+      const language = normalize(label);
+      if (!language) return;
+      const insideLanguageControl = button.closest('.language-mini,.portal-command-language,.switch');
+      if (insideLanguageControl) persistLanguage(language);
+    };
+
+    const onLanguageEvent = (event: Event) => {
+      const language = normalize((event as CustomEvent<string>).detail || null);
+      if (language) persistLanguage(language);
     };
 
     const onFocusIn = (event: FocusEvent) => {
@@ -53,8 +73,10 @@ export default function PremiumPolishExperience() {
     syncLanguage();
     window.addEventListener('resize', syncEnvironment, { passive: true });
     window.visualViewport?.addEventListener('resize', syncEnvironment, { passive: true });
+    window.addEventListener('ederito:language', onLanguageEvent as EventListener);
     reduced.addEventListener('change', syncEnvironment);
     coarse.addEventListener('change', syncEnvironment);
+    document.addEventListener('click', onLanguageClick);
     document.addEventListener('focusin', onFocusIn);
     document.addEventListener('focusout', onFocusOut);
     document.addEventListener('pointerdown', onPointer, { passive: true });
@@ -63,8 +85,10 @@ export default function PremiumPolishExperience() {
     return () => {
       window.removeEventListener('resize', syncEnvironment);
       window.visualViewport?.removeEventListener('resize', syncEnvironment);
+      window.removeEventListener('ederito:language', onLanguageEvent as EventListener);
       reduced.removeEventListener('change', syncEnvironment);
       coarse.removeEventListener('change', syncEnvironment);
+      document.removeEventListener('click', onLanguageClick);
       document.removeEventListener('focusin', onFocusIn);
       document.removeEventListener('focusout', onFocusOut);
       document.removeEventListener('pointerdown', onPointer);
