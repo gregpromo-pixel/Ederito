@@ -10,6 +10,7 @@ import './phone-country-code.css';
 import './crm.css';
 import './ai-planner.css';
 import './unified-experience.css';
+import './apple-footer.css';
 import './cinematic-ai.css';
 import './smart-client-workspace.css';
 import './premium-polish.css';
