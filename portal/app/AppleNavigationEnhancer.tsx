@@ -10,6 +10,7 @@ export default function AppleNavigationEnhancer() {
     const workspace = document.querySelector('.portal-workspace-nav');
     const nav = document.querySelector('.portal-command-nav');
     if (!header || !workspace || !nav || header.querySelector('.apple-workspace-toggle')) return;
+
     workspace.classList.add('apple-workspace-panel');
     const toggle = document.createElement('button');
     toggle.type = 'button';
@@ -21,10 +22,17 @@ export default function AppleNavigationEnhancer() {
       toggle.setAttribute('aria-expanded', String(open));
     });
     nav.prepend(toggle);
-    workspace.addEventListener('click', () => {
+
+    const close = () => {
       header.classList.remove('apple-menu-open');
       toggle.setAttribute('aria-expanded', 'false');
-    });
+    };
+    workspace.addEventListener('click', close);
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
+
+    const syncLanguage = () => window.setTimeout(() => window.location.reload(), 60);
+    window.addEventListener('ederito:language', syncLanguage);
+    return () => window.removeEventListener('ederito:language', syncLanguage);
   }, []);
   return null;
 }
