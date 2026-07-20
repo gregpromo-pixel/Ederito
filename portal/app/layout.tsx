@@ -12,6 +12,7 @@ import './ai-planner.css';
 import './unified-experience.css';
 import './cinematic-ai.css';
 import './smart-client-workspace.css';
+import './premium-polish.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import RequestStatusShortcut from './RequestStatusShortcut';
@@ -24,6 +25,7 @@ import AIPlannerShortcut from './AIPlannerShortcut';
 import UnifiedExperience from './UnifiedExperience';
 import CinematicAIExperience from './CinematicAIExperience';
 import SmartClientWorkspace from './SmartClientWorkspace';
+import PremiumPolishExperience from './PremiumPolishExperience';
 
 export const metadata: Metadata = {
   title: 'Ederito Client Portal',
@@ -39,6 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <UnifiedExperience />
         <CinematicAIExperience />
         <SmartClientWorkspace />
+        <PremiumPolishExperience />
         <IntakeEnhancer />
         <StartProjectTranslations />
         <ProjectJourneyPrefill />
