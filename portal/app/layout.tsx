@@ -6,6 +6,7 @@ import './admin-intakes.css';
 import './client-messages.css';
 import './request-center.css';
 import './sales-workflow.css';
+import './stripe-payments.css';
 import './phone-country-code.css';
 import './crm.css';
 import './ai-planner.css';
