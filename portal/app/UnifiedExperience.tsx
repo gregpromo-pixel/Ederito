@@ -5,12 +5,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 type Lang = 'en' | 'fr' | 'es';
+type Theme = 'light' | 'dark';
 type DashboardSection = 'projects' | 'contracts' | 'invoices' | 'messages' | 'support';
 
 const copy = {
-  en: { explore:'Explore Ederito', dashboard:'Dashboard', ai:'AI Studio', project:'New project', login:'Sign in', register:'Create account', signout:'Sign out', portal:'Client portal', projects:'Projects', contracts:'Contracts', invoices:'Invoices', messages:'Messages', support:'Support', operations:'Operations', company:'Company', services:'Services', legal:'Legal', privacy:'Privacy', terms:'Terms', contact:'Contact', language:'Language', rights:'All rights reserved.' },
-  fr: { explore:'Découvrir Ederito', dashboard:'Tableau de bord', ai:'Studio IA', project:'Nouveau projet', login:'Connexion', register:'Créer un compte', signout:'Déconnexion', portal:'Portail client', projects:'Projets', contracts:'Contrats', invoices:'Factures', messages:'Messages', support:'Assistance', operations:'Opérations', company:'Entreprise', services:'Services', legal:'Juridique', privacy:'Confidentialité', terms:'Conditions', contact:'Contact', language:'Langue', rights:'Tous droits réservés.' },
-  es: { explore:'Explorar Ederito', dashboard:'Panel', ai:'Estudio IA', project:'Nuevo proyecto', login:'Iniciar sesión', register:'Crear cuenta', signout:'Cerrar sesión', portal:'Portal del cliente', projects:'Proyectos', contracts:'Contratos', invoices:'Facturas', messages:'Mensajes', support:'Soporte', operations:'Operaciones', company:'Empresa', services:'Servicios', legal:'Legal', privacy:'Privacidad', terms:'Términos', contact:'Contacto', language:'Idioma', rights:'Todos los derechos reservados.' }
+  en: { explore:'Explore Ederito', dashboard:'Dashboard', ai:'AI Studio', project:'New project', login:'Sign in', register:'Create account', signout:'Sign out', portal:'Client portal', projects:'Projects', contracts:'Contracts', invoices:'Invoices', messages:'Messages', support:'Support', operations:'Operations', company:'Company', services:'Services', legal:'Legal', privacy:'Privacy', terms:'Terms', contact:'Contact', language:'Language', rights:'All rights reserved.', light:'Light mode', dark:'Dark mode' },
+  fr: { explore:'Découvrir Ederito', dashboard:'Tableau de bord', ai:'Studio IA', project:'Nouveau projet', login:'Connexion', register:'Créer un compte', signout:'Déconnexion', portal:'Portail client', projects:'Projets', contracts:'Contrats', invoices:'Factures', messages:'Messages', support:'Assistance', operations:'Opérations', company:'Entreprise', services:'Services', legal:'Juridique', privacy:'Confidentialité', terms:'Conditions', contact:'Contact', language:'Langue', rights:'Tous droits réservés.', light:'Mode clair', dark:'Mode sombre' },
+  es: { explore:'Explorar Ederito', dashboard:'Panel', ai:'Estudio IA', project:'Nuevo proyecto', login:'Iniciar sesión', register:'Crear cuenta', signout:'Cerrar sesión', portal:'Portal del cliente', projects:'Proyectos', contracts:'Contratos', invoices:'Facturas', messages:'Mensajes', support:'Soporte', operations:'Operaciones', company:'Empresa', services:'Servicios', legal:'Legal', privacy:'Privacidad', terms:'Términos', contact:'Contacto', language:'Idioma', rights:'Todos los derechos reservados.', light:'Modo claro', dark:'Modo oscuro' }
 };
 
 function readCookie(): Lang | null {
@@ -25,9 +26,16 @@ function persistLanguage(lang: Lang) {
   document.documentElement.dataset.lang = lang;
 }
 
+function applyTheme(theme: Theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem('ederito-portal-theme', theme);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#050505' : '#f6f4ee');
+}
+
 export default function UnifiedExperience() {
   const pathname = usePathname();
   const [lang, setLang] = useState<Lang>('en');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [dashboardSection, setDashboardSection] = useState<DashboardSection>('projects');
   const [hasOperations, setHasOperations] = useState(false);
 
@@ -36,6 +44,14 @@ export default function UnifiedExperience() {
     const next = readCookie() || (stored && ['en','fr','es'].includes(stored) ? stored : 'en');
     setLang(next);
     persistLanguage(next);
+
+    const storedTheme = localStorage.getItem('ederito-portal-theme');
+    const initialTheme: Theme = storedTheme === 'light' || storedTheme === 'dark'
+      ? storedTheme
+      : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    setTheme(initialTheme);
+    applyTheme(initialTheme);
+
     const timer = window.setTimeout(() => setHasOperations(Boolean(document.querySelector('.admin-nav-link'))), 0);
     return () => window.clearTimeout(timer);
   }, [pathname]);
@@ -70,6 +86,12 @@ export default function UnifiedExperience() {
     if (localControl && !localControl.classList.contains('active')) localControl.click();
   }
 
+  function toggleTheme() {
+    const next: Theme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    applyTheme(next);
+  }
+
   function chooseDashboardSection(next: DashboardSection, index: number) {
     setDashboardSection(next);
     document.querySelectorAll<HTMLButtonElement>('.dashboard-nav button')[index]?.click();
@@ -77,6 +99,7 @@ export default function UnifiedExperience() {
   }
 
   const dashboardSections: DashboardSection[] = ['projects','contracts','invoices','messages','support'];
+  const nextThemeLabel = theme === 'dark' ? t.light : t.dark;
 
   return <>
     <header className={`portal-command-header ${isDashboard ? 'has-workspace-row' : ''}`}>
@@ -93,6 +116,10 @@ export default function UnifiedExperience() {
           {!isAuth && <Link className={pathname.startsWith('/start-project') ? 'active primary' : 'primary'} href="/start-project">{t.project}</Link>}
         </nav>
         <div className="portal-command-actions">
+          <button className="portal-theme-toggle" type="button" onClick={toggleTheme} aria-label={nextThemeLabel} title={nextThemeLabel}>
+            <span className="portal-theme-toggle-icon" aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
+            <span className="portal-theme-toggle-label">{theme === 'dark' ? t.light : t.dark}</span>
+          </button>
           {isAuth ? <div className="portal-auth-actions"><Link href="/login">{t.login}</Link><Link className="primary" href="/login?mode=register">{t.register}</Link></div> : <form action="/auth/signout" method="post"><button className="portal-signout">{t.signout}</button></form>}
         </div>
         {isDashboard && <nav className="portal-workspace-nav" aria-label="Workspace sections">
