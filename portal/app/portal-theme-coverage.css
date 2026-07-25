@@ -1,0 +1,359 @@
+/* Final visual-only theme coverage. Loaded last so existing portal behavior stays untouched. */
+html[data-theme="dark"]{
+  --bg:#050505;
+  --panel:#101013;
+  --panel2:#17171b;
+  --text:#f7f5ef;
+  --muted:#aaa69d;
+  --line:rgba(255,255,255,.12);
+  --gold:#f4bf32;
+  --success:#36d486;
+  color-scheme:dark;
+}
+
+html[data-theme="light"]{
+  --bg:#f6f4ee;
+  --panel:#ffffff;
+  --panel2:#eeeae2;
+  --text:#181714;
+  --muted:#6b675f;
+  --line:rgba(24,23,20,.14);
+  --gold:#c88b00;
+  --success:#168957;
+  --light-surface:#ffffff;
+  --light-surface-soft:#f4f1ea;
+  --light-surface-muted:#eae6dd;
+  --light-text:#181714;
+  --light-copy:#514d46;
+  --light-muted:#726d64;
+  --light-shadow:0 24px 70px rgba(45,40,30,.10);
+  color-scheme:light;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body{
+  background-color:var(--bg)!important;
+  color:var(--text)!important;
+}
+
+html[data-theme="light"] body{
+  background-image:radial-gradient(circle at 82% 0,rgba(200,139,0,.09),transparent 28%)!important;
+}
+
+html[data-theme="light"] :is(.auth-layout,.portal,.dashboard-shell,.intake-page,.request-center,.sales-shell,.client-sales,.crm-shell,.admin-intakes,.ai-planner-page){
+  color:var(--text)!important;
+}
+
+html[data-theme="light"] :is(.auth-layout,.portal,.dashboard-shell,.intake-page,.request-center,.sales-shell,.client-sales,.admin-intakes){
+  background-color:transparent!important;
+}
+
+/* Shared navigation and page chrome */
+html[data-theme="light"] :is(.portal-command-inner,.topbar,.dashboard-topbar,.intake-topbar,.request-topbar,.ai-planner-topbar,.crm-top,.premium-admin-bar){
+  background:rgba(249,247,242,.94)!important;
+  border-color:var(--line)!important;
+  color:var(--text)!important;
+  box-shadow:0 18px 60px rgba(45,40,30,.10)!important;
+}
+
+html[data-theme="light"] :is(.portal-command-brand,.crm-brand,.premium-admin-bar .admin-brand,.brand,.sales-top a,.client-sales>header a){
+  color:var(--text)!important;
+}
+
+html[data-theme="light"] :is(.portal-command-nav a,.portal-auth-actions a,.portal-workspace-nav button,.portal-workspace-nav a,.dashboard-nav button,.crm-top nav,.premium-admin-bar nav){
+  color:var(--muted)!important;
+}
+
+html[data-theme="light"] :is(.portal-command-nav a:hover,.portal-command-nav a.active,.portal-auth-actions a:hover,.portal-workspace-nav button:hover,.portal-workspace-nav button.active,.dashboard-nav button:hover,.dashboard-nav button.nav-active){
+  background:rgba(24,23,20,.06)!important;
+  color:var(--text)!important;
+}
+
+html[data-theme="light"] .portal-workspace-nav.apple-workspace-panel{
+  background:rgba(249,247,242,.99)!important;
+  border-color:var(--line)!important;
+  box-shadow:0 24px 70px rgba(45,40,30,.16)!important;
+}
+
+html[data-theme="light"] :is(.portal-signout,.button.secondary,.proposal-actions button+button,.crm-records button){
+  background:transparent!important;
+  color:var(--text)!important;
+  border-color:var(--line)!important;
+}
+
+/* Shared surfaces */
+html[data-theme="light"] :is(
+  .card,.stat,.panel,.record,.premium-record,.premium-empty,.premium-support-form,
+  .concierge-card,.dashboard-stats,.workspace-tabs,.workspace-panel,
+  .journey-card,.intake-section,.package-card,.summary-card,.question-group,.choice-grid label,.switch-field,.cost-note,
+  .request-list,.request-card,.request-meta>div,.request-message,.request-correction,
+  .client-message-layout,.client-message-layout>aside,.client-thread article.theirs,
+  .sales-layout,.sales-layout>aside,.proposal-form,.sales-records article,.client-proposal,.client-contract,.client-invoice,
+  .crm-new,.crm-list,.crm-card,.crm-metrics article,.crm-client-head,.crm-records article,.crm-notes article,
+  .premium-workspace,.intake-queue,.review-grid article,.response-list>div,.message-thread,.message-composer,
+  .ai-form-chapter,.ai-live-preview,.ai-plan-result,.ai-generated-placeholder,.ai-submit-panel,
+  .smart-workspace,.smart-next-action,.smart-activity,.smart-timeline,
+  .cinematic-ai-stage,.cinematic-result-universe
+){
+  background-color:var(--light-surface)!important;
+  border-color:var(--line)!important;
+  color:var(--text)!important;
+}
+
+html[data-theme="light"] :is(.card,.panel,.concierge-card,.premium-record,.premium-support-form,.request-list,.sales-layout,.proposal-form,.crm-card,.premium-workspace,.ai-form-chapter,.ai-live-preview,.ai-plan-result,.smart-workspace,.cinematic-ai-stage){
+  box-shadow:var(--light-shadow)!important;
+}
+
+html[data-theme="light"] .concierge-card{
+  background-image:linear-gradient(155deg,#fff,#f0ece4 72%)!important;
+}
+
+html[data-theme="light"] .dashboard-stats,
+html[data-theme="light"] .workspace-tabs,
+html[data-theme="light"] .client-message-layout>aside,
+html[data-theme="light"] .sales-layout>aside,
+html[data-theme="light"] .intake-queue{
+  background-color:var(--light-surface-muted)!important;
+}
+
+html[data-theme="light"] .crm-client-head{
+  background-image:linear-gradient(135deg,#fff,#efebe3)!important;
+}
+
+html[data-theme="light"] .smart-workspace{
+  background-image:radial-gradient(circle at 85% 5%,rgba(200,139,0,.11),transparent 28%)!important;
+}
+
+/* Text contrast */
+html[data-theme="light"] :is(
+  .auth-copy h1,.card h1,.card h2,.dashboard-hero h1,.concierge-card h2,.workspace-heading h2,
+  .intake-hero h1,.journey-card h2,.section-heading h2,.package-card h3,.summary-card h3,
+  .request-hero h1,.request-card-head h2,.sales-hero h1,.client-sales-hero h1,.sales-client h2,
+  .client-proposal h3,.client-contract h3,.crm-hero h1,.crm-client-head h2,.crm-card h3,
+  .premium-admin-hero h1,.review-head h2,.response-title h3,
+  .ai-planner-hero h1,.ai-form-chapter h2,.ai-live-preview h2,.ai-preview-project h3,.ai-plan-result h2,
+  .smart-workspace-head h2,.smart-next-action h3,.cinematic-ai-stage h2
+){
+  color:var(--text)!important;
+}
+
+html[data-theme="light"] :is(
+  .lead,.muted,.switch,.empty,.stat span,.dashboard-hero-copy>p:last-of-type,.concierge-card p:not(.eyebrow),
+  .intake-hero>div>p:last-child,.section-heading.compact>p,.journey-card>p:not(.eyebrow),.package-card>p,.question-group-head p,
+  .request-hero>p:last-child,.request-card-head small,.request-meta small,.request-message small,
+  .sales-hero>span,.client-sales-hero>span,.proposal-list article p,.client-proposal>p,.client-contract>p,.contract-content,
+  .crm-hero span,.crm-form-grid label span,.crm-list span,.crm-records p,.crm-notes p,.crm-timeline p,
+  .premium-admin-hero>span,.admin-metrics span,.review-head span,.review-total small,
+  .ai-planner-hero>div>p:last-child,.ai-form-chapter header p,.ai-preview-project>p,.ai-summary,.ai-next-step p,.ai-generated-placeholder>p:last-child,
+  .smart-workspace-head>div>p:last-child,.smart-next-action p,.cinematic-ai-stage>p:not(.eyebrow),
+  .ederito-global-footer
+){
+  color:var(--muted)!important;
+}
+
+html[data-theme="light"] :is(
+  .hero-proof span,.journey-card>span,.package-card li,.choice-grid span,.summary-list span,
+  .request-message p,.request-correction p,.request-open,
+  .client-message-layout>aside button,.client-thread article.theirs,.client-reply>div small,
+  .sales-layout aside button,.sales-grid span,.client-proposal dd,
+  .queue-list>button,.response-list pre,.review-form label>span,
+  .ai-planner-proof span,.ai-planner-form .field>span,.ai-choice-field legend,.ai-choice-field button>span,.ai-path-grid strong,.ai-missing-list h4,.ai-result-list,
+  .smart-next-action>div>a:last-child,.smart-activity button,.cinematic-ai-nodes span,.cinematic-result-universe header strong,.cinematic-universe-map article span
+){
+  color:var(--light-copy)!important;
+}
+
+/* Inputs and controls */
+html[data-theme="light"] :is(input,select,textarea){
+  background:#fff!important;
+  color:var(--text)!important;
+  border-color:var(--line)!important;
+  color-scheme:light;
+}
+
+html[data-theme="light"] :is(input,textarea)::placeholder{
+  color:#98938a!important;
+  opacity:1;
+}
+
+html[data-theme="light"] :is(.language-mini,.portal-command-language,.auth-tabs){
+  background:var(--light-surface-muted)!important;
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] :is(.language-mini button.active,.portal-command-language button.active,.auth-tab.active,.workspace-tabs button.active,.review-tabs button.active){
+  background:#181714!important;
+  color:#fff!important;
+}
+
+html[data-theme="light"] :is(.choice-grid label.choice-selected,.ai-choice-field button.selected,.sales-layout aside button.active,.crm-notes article.pinned,.cinematic-result-universe){
+  background:#fff8e7!important;
+  border-color:rgba(200,139,0,.42)!important;
+}
+
+/* Dashboard */
+html[data-theme="light"] .dashboard-ticker{
+  background:#e9e5dc!important;
+  border-color:var(--line)!important;
+}
+html[data-theme="light"] .dashboard-ticker>div{color:var(--light-copy)!important}
+html[data-theme="light"] .dashboard-stats article{border-color:var(--line)!important}
+
+/* Requests and messages */
+html[data-theme="light"] .request-list>header,
+html[data-theme="light"] .request-card,
+html[data-theme="light"] .client-message-layout>aside,
+html[data-theme="light"] .client-reply,
+html[data-theme="light"] .client-message-layout>aside button{
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] .client-thread article.mine,
+html[data-theme="light"] .staff-message{
+  background:var(--gold)!important;
+  color:#111!important;
+}
+
+html[data-theme="light"] :is(.client-thread article>div button,.message-files button,.selected-files span,.client-reply>div small){
+  background:var(--light-surface-soft)!important;
+  border-color:var(--line)!important;
+  color:var(--light-copy)!important;
+}
+
+/* Sales and CRM */
+html[data-theme="light"] :is(.sales-top,.client-sales>header,.sales-hero,.client-sales-hero,.sales-client,.proposal-list article,.sales-box,.client-proposal dl div){
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] .client-proposal dl div,
+html[data-theme="light"] .crm-records article,
+html[data-theme="light"] .crm-notes article{
+  background:var(--light-surface-soft)!important;
+}
+
+html[data-theme="light"] .crm-shell{
+  background:radial-gradient(circle at 80% 0,rgba(200,139,0,.10),transparent 24%),var(--bg)!important;
+}
+
+/* Admin */
+html[data-theme="light"] :is(.admin-metrics,.admin-metrics article,.premium-workspace,.intake-queue,.queue-tools,.service-pills,.review-head,.review-form,.response-list>div,.message-thread,.message-composer){
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] :is(.service-pills button,.review-tabs button){
+  background:#fff!important;
+  color:var(--muted)!important;
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] :is(.service-pills button.active,.review-tabs button.active){
+  background:var(--gold)!important;
+  color:#111!important;
+  border-color:var(--gold)!important;
+}
+
+html[data-theme="light"] .queue-list>button:hover,
+html[data-theme="light"] .queue-list>button.active{
+  background:linear-gradient(90deg,rgba(200,139,0,.12),transparent)!important;
+}
+
+html[data-theme="light"] .client-message{
+  background:var(--light-surface-muted)!important;
+  border-color:var(--line)!important;
+  color:var(--text)!important;
+}
+
+/* AI Studio */
+html[data-theme="light"] .ai-planner-page{
+  --ai-panel:#fff;
+  --ai-panel-2:#f1ede5;
+  --ai-line:rgba(24,23,20,.13);
+  --ai-muted:#6f6a62;
+}
+
+html[data-theme="light"] .ai-planner-page:before{
+  background:radial-gradient(circle at 76% 8%,rgba(200,139,0,.11),transparent 25%),radial-gradient(circle at 14% 40%,rgba(24,23,20,.025),transparent 24%)!important;
+}
+
+html[data-theme="light"] :is(.ai-form-chapter>header,.ai-live-preview>header,.ai-path-grid,.ai-result-list,.ai-submit-panel>div:first-child){
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] :is(.ai-prompt-row button,.ai-choice-field button,.ai-preview-tags span,.ai-selected-facts span,.ai-vision-field>small){
+  background:var(--light-surface-soft)!important;
+  color:var(--light-copy)!important;
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] .ai-score-ring:after,
+html[data-theme="light"] .smart-progress:after{
+  background:#fff!important;
+}
+
+html[data-theme="light"] .ai-choice-field button.selected>i{
+  box-shadow:inset 0 0 0 3px #fff!important;
+}
+
+html[data-theme="light"] .ai-score-ring small,
+html[data-theme="light"] .ai-choice-field button>small,
+html[data-theme="light"] .ai-missing-list li,
+html[data-theme="light"] .ai-path-grid small{
+  color:var(--muted)!important;
+}
+
+/* Smart workspace and cinematic layer */
+html[data-theme="light"] .smart-activity header,
+html[data-theme="light"] .smart-activity button,
+html[data-theme="light"] .smart-timeline>div:before{
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] .smart-timeline button i{
+  background:#fff!important;
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] .cinematic-ai-backdrop{
+  background:radial-gradient(circle at 50% 38%,rgba(200,139,0,.15),transparent 24%),linear-gradient(180deg,rgba(246,244,238,.90),rgba(246,244,238,.98))!important;
+}
+
+html[data-theme="light"] :is(.cinematic-ai-progress,.cinematic-ai-nodes article){
+  background:rgba(24,23,20,.05)!important;
+  border-color:var(--line)!important;
+}
+
+html[data-theme="light"] .cinematic-universe-map article i{
+  border-color:#fff!important;
+}
+
+/* Shared footer */
+html[data-theme="light"] .ederito-global-footer{
+  background:#eae6dd!important;
+  border-color:var(--line)!important;
+  color:var(--muted)!important;
+}
+
+html[data-theme="light"] :is(.ederito-footer-grid h3,.ederito-footer-brand strong){color:var(--text)!important}
+html[data-theme="light"] .ederito-footer-grid a{color:#5f5b54!important}
+html[data-theme="light"] .ederito-footer-bottom{border-color:var(--line)!important}
+html[data-theme="light"] .ederito-footer-language select{background:#fff!important;color:var(--text)!important;border-color:var(--line)!important}
+
+/* Automatic fallback if JavaScript is unavailable. */
+@media(prefers-color-scheme:light){
+  html:not([data-theme]){
+    --bg:#f6f4ee;
+    --panel:#ffffff;
+    --panel2:#eeeae2;
+    --text:#181714;
+    --muted:#6b675f;
+    --line:rgba(24,23,20,.14);
+    --gold:#c88b00;
+    color-scheme:light;
+    background:#f6f4ee;
+  }
+  html:not([data-theme]) body{background:#f6f4ee;color:#181714}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-theme="light"] *,html[data-theme="dark"] *{transition:none!important}
+}
