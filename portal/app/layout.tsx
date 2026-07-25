@@ -15,6 +15,7 @@ import './apple-navigation.css';
 import './cinematic-ai.css';
 import './smart-client-workspace.css';
 import './premium-polish.css';
+import './portal-theme.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import PhoneCountryCodeEnhancer from './PhoneCountryCodeEnhancer';
@@ -36,7 +37,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{__html:`(()=>{try{const saved=localStorage.getItem('ederito-portal-theme');const dark=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.dataset.theme=saved==='light'||saved==='dark'?saved:(dark?'dark':'light')}catch{}})();`}} />
+      </head>
       <body>
         {children}
         <UnifiedExperience />
