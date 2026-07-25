@@ -17,6 +17,7 @@ import './smart-client-workspace.css';
 import './premium-polish.css';
 import './portal-theme.css';
 import './portal-theme-coverage.css';
+import './stripe-payments.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import PhoneCountryCodeEnhancer from './PhoneCountryCodeEnhancer';
