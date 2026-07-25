@@ -1,5 +1,5 @@
 (() => {
-  const portal = 'https://ederito.com/portal/';
+  const portal = 'https://portal.ederito.com';
   const services = [
     { number:'01', title:['Business websites','Sites web professionnels','Sitios web empresariales'], text:['Landing pages, portfolios and complete business websites.','Pages d’atterrissage, portfolios et sites professionnels complets.','Páginas de destino, portafolios y sitios empresariales completos.'], journey:'website' },
     { number:'02', title:['Mobile applications','Applications mobiles','Aplicaciones móviles'], text:['iOS and Android products designed, developed and prepared for launch.','Produits iOS et Android conçus, développés et préparés au lancement.','Productos iOS y Android diseñados, desarrollados y preparados para su lanzamiento.'], journey:'app' },
@@ -20,9 +20,10 @@
 
   const session = () => window.ederitoSession || { authenticated:false };
   const projectUrl = (service) => {
-    const params = new URLSearchParams({ journey:service.journey, service:service.title[0] });
-    if (!session().authenticated) params.set('mode','register');
-    return `${portal}?${params.toString()}`;
+    const next = `/start-project?journey=${encodeURIComponent(service.journey)}&service=${encodeURIComponent(service.title[0])}`;
+    return session().authenticated
+      ? `${portal}${next}`
+      : `${portal}/login?mode=register&next=${encodeURIComponent(next)}`;
   };
 
   function addStyles(){
@@ -30,15 +31,15 @@
     const style=document.createElement('style');
     style.id='ederito-catalog-styles';
     style.textContent=`
-      .catalog-intro{max-width:760px;color:#68655d;font-size:17px;margin-top:18px}
-      .catalog-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#c8c4bb;border:1px solid #c8c4bb;border-radius:24px;overflow:hidden}
-      .catalog-card{min-height:270px;padding:32px;background:#efede7;color:#111;text-decoration:none;display:flex;flex-direction:column;transition:background .2s ease,transform .2s ease}
-      .catalog-card:hover{background:#fff;transform:translateY(-2px)}
-      .catalog-card-top{display:flex;justify-content:space-between;gap:18px;color:#77736b;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-      .catalog-card h3{font-size:30px;line-height:1.05;margin:42px 0 12px}.catalog-card p{color:#68655d;margin:0;max-width:520px}
-      .catalog-card-action{margin-top:auto;padding-top:28px;font-weight:800;color:#111;display:flex;justify-content:space-between;align-items:center}
-      .catalog-card-action b{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#f2be32;font-size:20px}
-      .catalog-card.coming-soon{cursor:not-allowed;background:#dedbd4;opacity:.82}.catalog-card.coming-soon:hover{transform:none;background:#dedbd4}
+      .catalog-intro{max-width:760px;color:var(--muted);font-size:17px;margin-top:18px}
+      .catalog-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+      .catalog-card{min-height:270px;padding:32px;background:var(--surface);color:var(--text);text-decoration:none;display:flex;flex-direction:column;transition:background .2s ease,transform .2s ease}
+      .catalog-card:hover{background:var(--surface2);transform:translateY(-2px)}
+      .catalog-card-top{display:flex;justify-content:space-between;gap:18px;color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+      .catalog-card h3{font-size:30px;line-height:1.05;margin:42px 0 12px}.catalog-card p{color:var(--muted);margin:0;max-width:520px}
+      .catalog-card-action{margin-top:auto;padding-top:28px;font-weight:800;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+      .catalog-card-action b{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--gold);color:#111;font-size:20px}
+      .catalog-card.coming-soon{cursor:not-allowed;opacity:.68}.catalog-card.coming-soon:hover{transform:none}
       .secure-project-entry{padding:34px;border:1px solid var(--line);border-radius:22px;background:var(--surface);display:grid;gap:18px;align-content:center}
       .secure-project-entry h3{font-size:34px;line-height:1.05;margin:0}.secure-project-entry p{color:var(--muted);margin:0}.secure-entry-actions{display:flex;gap:12px;flex-wrap:wrap}
       @media(max-width:780px){.catalog-grid{grid-template-columns:1fr}.catalog-card{min-height:245px}.catalog-card h3{font-size:27px}.secure-entry-actions .btn{width:100%}}
@@ -87,8 +88,8 @@
     if(!box)return;
     const loggedIn=session().authenticated;
     box.innerHTML=loggedIn
-      ? `<p class="eyebrow">${translated(['Secure project intake','Demande de projet sécurisée','Solicitud de proyecto segura'])}</p><h3>${translated(['Welcome back. Start your next project.','Bon retour. Démarrez votre prochain projet.','Bienvenido de nuevo. Inicia tu próximo proyecto.'])}</h3><p>${translated(['Your dashboard keeps requests, messages, proposals, agreements, invoices and updates together.','Votre tableau de bord rassemble demandes, messages, propositions, contrats, factures et suivis.','Tu panel reúne solicitudes, mensajes, propuestas, contratos, facturas y actualizaciones.'])}</p><div class="secure-entry-actions"><a class="btn btn-gold" href="${portal}">${translated(['Open dashboard','Ouvrir le tableau de bord','Abrir panel'])}</a><a class="btn btn-dark" href="#services">${translated(['Choose a service','Choisir un service','Elegir un servicio'])}</a></div>`
-      : `<p class="eyebrow">${translated(['Secure project intake','Demande de projet sécurisée','Solicitud de proyecto segura'])}</p><h3>${translated(['Create an account before starting a project.','Créez un compte avant de démarrer un projet.','Crea una cuenta antes de iniciar un proyecto.'])}</h3><p>${translated(['Your account keeps every project document and update together.','Votre compte centralise tous les documents et suivis du projet.','Tu cuenta reúne todos los documentos y actualizaciones del proyecto.'])}</p><div class="secure-entry-actions"><a class="btn btn-gold" href="#services">${translated(['Choose a project','Choisir un projet','Elegir un proyecto'])}</a><a class="btn btn-dark" href="${portal}?mode=login">${translated(['Client login','Connexion client','Acceso cliente'])}</a></div>`;
+      ? `<p class="eyebrow">${translated(['Secure project intake','Demande de projet sécurisée','Solicitud de proyecto segura'])}</p><h3>${translated(['Welcome back. Start your next project.','Bon retour. Démarrez votre prochain projet.','Bienvenido de nuevo. Inicia tu próximo proyecto.'])}</h3><p>${translated(['Your dashboard keeps requests, messages, proposals, agreements, invoices and updates together.','Votre tableau de bord rassemble demandes, messages, propositions, contrats, factures et suivis.','Tu panel reúne solicitudes, mensajes, propuestas, contratos, facturas y actualizaciones.'])}</p><div class="secure-entry-actions"><a class="btn btn-gold" href="${portal}/dashboard">${translated(['Open dashboard','Ouvrir le tableau de bord','Abrir panel'])}</a><a class="btn btn-dark" href="#services">${translated(['Choose a service','Choisir un service','Elegir un servicio'])}</a></div>`
+      : `<p class="eyebrow">${translated(['Secure project intake','Demande de projet sécurisée','Solicitud de proyecto segura'])}</p><h3>${translated(['Create an account before starting a project.','Créez un compte avant de démarrer un projet.','Crea una cuenta antes de iniciar un proyecto.'])}</h3><p>${translated(['Your account keeps every project document and update together.','Votre compte centralise tous les documents et suivis du projet.','Tu cuenta reúne todos los documentos y actualizaciones del proyecto.'])}</p><div class="secure-entry-actions"><a class="btn btn-gold" href="#services">${translated(['Choose a project','Choisir un projet','Elegir un proyecto'])}</a><a class="btn btn-dark" href="${portal}/login">${translated(['Client login','Connexion client','Acceso cliente'])}</a></div>`;
   }
 
   function secureContactSection(){
