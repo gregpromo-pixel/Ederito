@@ -35,11 +35,33 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false }
 };
 
+const automaticThemeScript = `
+(() => {
+  try {
+    localStorage.removeItem('ederito-portal-theme');
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => {
+      const theme = media.matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+      let meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'theme-color');
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', theme === 'dark' ? '#050505' : '#f6f4ee');
+    };
+    apply();
+    media.addEventListener?.('change', apply);
+  } catch {}
+})();`;
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{__html:`(()=>{try{const saved=localStorage.getItem('ederito-portal-theme');const dark=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.dataset.theme=saved==='light'||saved==='dark'?saved:(dark?'dark':'light')}catch{}})();`}} />
+        <script dangerouslySetInnerHTML={{ __html: automaticThemeScript }} />
       </head>
       <body>
         {children}
