@@ -8,6 +8,27 @@ function money(cents=0,currency='USD'){return new Intl.NumberFormat('en-US',{sty
 function esc(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function item(title,sub,status=''){return `<div class="list-item"><div><strong>${esc(title)}</strong><small>${esc(sub||'')}</small></div>${status?`<span class="badge">${esc(status)}</span>`:''}</div>`}
 function list(rows,mapper){return rows.length?`<div class="list">${rows.map(mapper).join('')}</div>`:'<div class="empty">Nothing here yet.</div>'}
+
+const themeMedia=window.matchMedia('(prefers-color-scheme: dark)');
+const themeOrder=['auto','light','dark'];
+function themeMode(){return localStorage.getItem('ederito-portal-theme')||'auto'}
+function applyTheme(mode=themeMode()){
+  const root=document.documentElement;
+  root.dataset.themeMode=mode;
+  if(mode==='auto')delete root.dataset.theme;else root.dataset.theme=mode;
+  const actual=mode==='auto'?(themeMedia.matches?'dark':'light'):mode;
+  const icon=actual==='dark'?'☾':'☀';
+  const label=mode==='auto'?'Auto':mode[0].toUpperCase()+mode.slice(1);
+  if($('#themeIcon'))$('#themeIcon').textContent=mode==='auto'?'◐':icon;
+  if($('#themeLabel'))$('#themeLabel').textContent=label;
+  if($('#themeToggle')){$('#themeToggle').title=`Theme: ${label.toLowerCase()}`;$('#themeToggle').setAttribute('aria-label',`Theme: ${label.toLowerCase()}`)}
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',actual==='dark'?'#08090b':'#f7f5ef');
+}
+function cycleTheme(){const current=themeMode();const next=themeOrder[(themeOrder.indexOf(current)+1)%themeOrder.length];if(next==='auto')localStorage.removeItem('ederito-portal-theme');else localStorage.setItem('ederito-portal-theme',next);applyTheme(next);toast(`Theme: ${next==='auto'?'automatic':next}`)}
+applyTheme();
+themeMedia.addEventListener?.('change',()=>{if(themeMode()==='auto')applyTheme('auto')});
+$('#themeToggle')?.addEventListener('click',cycleTheme);
+
 async function loadTable(name,select='*',order='created_at'){const {data,error}=await db.from(name).select(select).order(order,{ascending:false});if(error){console.warn(name,error.message);return[]}return data||[]}
 async function loadData(){if(!state.user)return;const [profile,projects,proposals,invoices,contracts,files,conversations,tickets,subscriptions]=await Promise.all([
  db.from('profiles').select('*').eq('id',state.user.id).maybeSingle(),loadTable('projects'),loadTable('proposals'),loadTable('invoices'),loadTable('contracts'),loadTable('files'),loadTable('client_conversations'),loadTable('support_tickets'),loadTable('client_subscriptions')]);
@@ -31,5 +52,4 @@ $('#signOut').addEventListener('click',async()=>{await db.auth.signOut();showAut
 $('#refreshData').addEventListener('click',()=>{toast('Refreshing…');loadData()});
 $$('.nav-item').forEach(btn=>btn.addEventListener('click',()=>{$$('.nav-item').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$('.sidebar').classList.remove('open');render(btn.dataset.view)}));
 $('#mobileMenu').addEventListener('click',()=>$('.sidebar').classList.toggle('open'));
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',e=>document.querySelector('meta[name="theme-color"]').content=e.matches?'#08090b':'#f7f5ef');
 (async()=>{const {data}=await db.auth.getSession();data.session?showApp(data.session):showAuth();db.auth.onAuthStateChange((_event,session)=>session?showApp(session):showAuth())})();
