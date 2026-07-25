@@ -10,4 +10,4 @@ function initializeSite(){ensureLegalUI();ensureBrandLinks();syncThemeColor();wi
 function loadScript(src,key){if(document.querySelector(`script[data-${key}]`))return;const script=document.createElement('script');script.src=src;script.dataset[key]='true';document.head.appendChild(script)}
 function loadStylesheet(href,key){if(document.querySelector(`link[data-${key}]`))return;const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset[key]='true';document.head.appendChild(link)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initializeSite,{once:true});else initializeSite();
-loadScript('service-catalog.js','ederitoCatalog');loadStylesheet('experience.css','ederitoExperience');loadScript('experience.js','ederitoExperience');loadStylesheet('studio.css','ederitoStudio');loadScript('studio.js','ederitoStudio');
+loadScript('service-catalog.js','ederitoCatalog');loadStylesheet('experience.css','ederitoExperience');loadScript('experience.js','ederitoExperience');
