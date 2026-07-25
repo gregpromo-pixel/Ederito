@@ -68,11 +68,5 @@ export async function GET(request: Request, { params }: { params: Promise<{ invo
     return NextResponse.redirect(new URL('/dashboard/sales?payment=error', request.url));
   }
 
-  await supabase
-    .from('invoices')
-    .update({ stripe_checkout_session_id: session.id, updated_at: new Date().toISOString() })
-    .eq('id', invoice.id)
-    .eq('client_id', user.id);
-
   return NextResponse.redirect(session.url, 303);
 }
