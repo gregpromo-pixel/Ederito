@@ -1,1 +1,177 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f7f5ef"><meta name="description" content="Ederito Studio client portal for projects, proposals, invoices, files, messages and support."><title>Ederito Studio — Client Portal</title><script>(()=>{const saved=localStorage.getItem('ederito-portal-theme');if(saved==='light'||saved==='dark')document.documentElement.dataset.theme=saved;document.documentElement.dataset.themeMode=saved||'auto'})();</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css?v=20260725-2"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><div class="ambient"></div><div id="toast" class="toast"></div><button id="themeToggle" class="theme-toggle" type="button" aria-label="Theme: automatic" title="Theme: automatic"><span id="themeIcon">◐</span><b id="themeLabel">Auto</b></button><section id="authView" class="auth-shell"><a class="brand auth-brand" href="https://ederito.com"><span class="brand-mark">E</span><span>EDERITO <small>STUDIO</small></span></a><div class="auth-grid"><div class="auth-copy"><p class="eyebrow">CLIENT EXPERIENCE</p><h1>Your project.<br><span>One clear place.</span></h1><p>Follow progress, review proposals, access invoices and contracts, exchange files, and speak directly with Ederito Studio.</p><div class="auth-proof"><div><strong>Secure</strong><span>Client-scoped access</span></div><div><strong>Live</strong><span>Real project data</span></div><div><strong>Simple</strong><span>Everything together</span></div></div></div><div class="auth-card"><div class="auth-tabs"><button class="auth-tab active" data-mode="login">Sign in</button><button class="auth-tab" data-mode="register">Create account</button></div><form id="authForm"><div id="nameField" class="field hidden"><label for="fullName">Full name</label><input id="fullName" name="fullName" autocomplete="name" placeholder="Your full name"></div><div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div><div class="field"><label for="password">Password</label><input id="password" name="password" type="password" minlength="8" autocomplete="current-password" required placeholder="At least 8 characters"></div><button id="authSubmit" class="button primary" type="submit">Sign in</button><button id="resetPassword" class="text-button" type="button">Forgot your password?</button><p class="fine-print">By continuing, you agree to the Ederito Studio terms and privacy policy.</p></form></div></div></section><div id="appView" class="app-shell hidden"><aside class="sidebar"><a class="brand" href="#overview"><span class="brand-mark">E</span><span>EDERITO <small>STUDIO</small></span></a><nav id="nav" class="nav"><button class="nav-item active" data-view="overview">Overview</button><button class="nav-item" data-view="projects">Projects</button><button class="nav-item" data-view="proposals">Proposals</button><button class="nav-item" data-view="billing">Billing</button><button class="nav-item" data-view="contracts">Contracts</button><button class="nav-item" data-view="files">Files</button><button class="nav-item" data-view="messages">Messages</button><button class="nav-item" data-view="support">Support</button></nav><div class="sidebar-bottom"><a href="https://ederito.com" class="sidebar-link">Visit ederito.com ↗</a><button id="signOut" class="sidebar-link">Sign out</button></div></aside><main class="main"><header class="topbar"><button id="mobileMenu" class="icon-button mobile-menu">☰</button><div><p class="eyebrow">CLIENT PORTAL</p><h2 id="pageTitle">Overview</h2></div><div class="topbar-actions"><button id="refreshData" class="icon-button">↻</button><div class="profile-chip"><span id="profileInitial">E</span><b id="profileName">Client</b></div></div></header><section id="content" class="content"></section></main></div><script src="app.js?v=20260725-2"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f5ef">
+  <meta name="description" content="Ederito Studio client portal for projects, proposals, invoices, files, messages and support.">
+  <title>Ederito Studio — Client Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260725-3">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <section id="authView" class="auth-shell">
+    <a class="brand auth-brand" href="https://ederito.com" aria-label="Go to Ederito Studio home">
+      <img class="brand-logo" src="../assets/eder-logo.png" alt="Ederito Studio">
+      <span>EDERITO <small>STUDIO</small></span>
+    </a>
+
+    <div class="auth-grid">
+      <div class="auth-copy">
+        <p class="eyebrow">CLIENT PORTAL</p>
+        <h1>Manage your work with Ederito Studio.</h1>
+        <p>Access your projects, proposals, invoices, contracts, files, and conversations from one secure place.</p>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" data-mode="login" type="button">Sign in</button>
+          <button class="auth-tab" data-mode="register" type="button">Create account</button>
+        </div>
+
+        <form id="authForm">
+          <div id="nameField" class="field hidden">
+            <label for="fullName">Full name</label>
+            <input id="fullName" name="fullName" autocomplete="name" placeholder="Your full name">
+          </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" minlength="8" autocomplete="current-password" required placeholder="At least 8 characters">
+          </div>
+          <button id="authSubmit" class="button primary full" type="submit">Sign in</button>
+          <button id="resetPassword" class="text-button" type="button">Forgot your password?</button>
+          <p class="fine-print">By continuing, you agree to the Ederito Studio terms and privacy policy.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <a class="brand" href="https://ederito.com" aria-label="Go to Ederito Studio home">
+        <img class="brand-logo" src="../assets/eder-logo.png" alt="Ederito Studio">
+        <span>EDERITO <small>STUDIO</small></span>
+      </a>
+
+      <button class="button primary start-project sidebar-start" type="button" data-start-project>Start a project</button>
+
+      <nav id="nav" class="nav">
+        <button class="nav-item active" data-view="overview" type="button">Overview</button>
+        <button class="nav-item" data-view="projects" type="button">Projects</button>
+        <button class="nav-item" data-view="proposals" type="button">Proposals</button>
+        <button class="nav-item" data-view="billing" type="button">Billing</button>
+        <button class="nav-item" data-view="contracts" type="button">Contracts</button>
+        <button class="nav-item" data-view="files" type="button">Files</button>
+        <button class="nav-item" data-view="messages" type="button">Messages</button>
+        <button class="nav-item" data-view="support" type="button">Support</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a href="https://ederito.com" class="sidebar-link">Back to main website</a>
+        <button id="signOut" class="sidebar-link" type="button">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="mobileMenu" class="icon-button mobile-menu" type="button" aria-label="Open menu">☰</button>
+          <a class="mobile-brand" href="https://ederito.com" aria-label="Go to Ederito Studio home">
+            <img src="../assets/eder-logo.png" alt="Ederito Studio">
+          </a>
+          <div>
+            <p class="eyebrow">CLIENT PORTAL</p>
+            <h2 id="pageTitle">Overview</h2>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="button primary topbar-start" type="button" data-start-project>Start a project</button>
+          <button id="refreshData" class="icon-button" type="button" aria-label="Refresh data">↻</button>
+          <div class="profile-chip">
+            <span id="profileInitial">E</span>
+            <b id="profileName">Client</b>
+          </div>
+        </div>
+      </header>
+
+      <section id="content" class="content" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <dialog id="projectDialog" class="project-dialog">
+    <form id="projectForm" class="project-form">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">NEW REQUEST</p>
+          <h3>Start a project</h3>
+          <p>Tell us what you need. Ederito Studio will review the request and follow up with the next steps.</p>
+        </div>
+        <button id="closeProjectDialog" class="icon-button" type="button" aria-label="Close">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="projectType">Project type</label>
+          <select id="projectType" required>
+            <option value="">Choose a service</option>
+            <option>Business website</option>
+            <option>Online store</option>
+            <option>Mobile application</option>
+            <option>Custom platform</option>
+            <option>Branding and design</option>
+            <option>Maintenance and support</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="projectCompany">Company or organization</label>
+          <input id="projectCompany" autocomplete="organization" placeholder="Optional">
+        </div>
+        <div class="field">
+          <label for="projectBudget">Estimated budget</label>
+          <select id="projectBudget">
+            <option value="">Not sure yet</option>
+            <option>Under $500</option>
+            <option>$500–$1,500</option>
+            <option>$1,500–$5,000</option>
+            <option>$5,000–$10,000</option>
+            <option>$10,000+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="projectTimeline">Preferred timeline</label>
+          <select id="projectTimeline">
+            <option value="">Flexible</option>
+            <option>As soon as possible</option>
+            <option>Within 1 month</option>
+            <option>Within 2–3 months</option>
+            <option>More than 3 months</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="projectDescription">Project details</label>
+        <textarea id="projectDescription" rows="6" required placeholder="Describe your goals, the main features you need, and anything important we should know."></textarea>
+      </div>
+
+      <div class="dialog-actions">
+        <button id="cancelProject" class="button secondary" type="button">Cancel</button>
+        <button id="submitProject" class="button primary" type="submit">Submit request</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js?v=20260725-3"></script>
+</body>
+</html>
