@@ -37,6 +37,7 @@ import PremiumPolishExperience from './PremiumPolishExperience';
 import PortalNoticeEnhancer from './PortalNoticeEnhancer';
 import ProjectPaymentGuidance from './ProjectPaymentGuidance';
 import RouteProgress from './RouteProgress';
+import DirectCheckoutEnhancer from './DirectCheckoutEnhancer';
 
 export const metadata: Metadata = {
   title: 'Ederito Client Portal',
@@ -78,6 +79,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <AppleNavigationEnhancer />
         <RouteProgress />
         <ProjectPaymentGuidance />
+        <DirectCheckoutEnhancer />
         <CinematicAIExperience />
         <PremiumPolishExperience />
         <PortalNoticeEnhancer />
