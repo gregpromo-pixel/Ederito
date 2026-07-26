@@ -88,7 +88,7 @@ export async function POST(request: Request) {
 
   const { data: invoice, error: invoiceError } = await supabase
     .from('invoices')
-    .select('id,client_id,status,total_cents,currency,stripe_checkout_session_id')
+    .select('id,client_id,status,total_cents,currency,stripe_checkout_session_id,intake_submission_id,payment_kind,remaining_balance_cents')
     .eq('id', invoiceId)
     .eq('client_id', clientId)
     .maybeSingle();
@@ -124,16 +124,40 @@ export async function POST(request: Request) {
 
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
 
+  if (invoice.intake_submission_id) {
+    const paymentStatus = invoice.payment_kind === 'deposit' ? 'deposit_paid' : 'paid';
+    const { error: intakeError } = await supabase
+      .from('intake_submissions')
+      .update({
+        payment_status: paymentStatus,
+        payment_kind: invoice.payment_kind || 'full',
+        amount_due_now_cents: amountTotal,
+        remaining_balance_cents: Number(invoice.remaining_balance_cents || 0),
+        client_visible_status: invoice.payment_kind === 'deposit' ? 'Deposit paid' : 'Paid',
+        client_status_message: invoice.payment_kind === 'deposit'
+          ? 'Your 50% project deposit was received. Ederito will confirm the scope and remaining balance.'
+          : 'Your payment was received. Ederito will continue with the next project step.',
+        updated_at: paidAt
+      })
+      .eq('id', invoice.intake_submission_id)
+      .eq('client_id', clientId);
+
+    if (intakeError) return NextResponse.json({ error: intakeError.message }, { status: 500 });
+  }
+
   await supabase.from('sales_workflow_events').insert({
     client_id: clientId,
     invoice_id: invoiceId,
     actor_id: clientId,
-    event_type: 'invoice_paid',
+    event_type: invoice.payment_kind === 'deposit' ? 'project_deposit_paid' : 'invoice_paid',
     metadata: {
       stripe_event_id: event.id || null,
       stripe_checkout_session_id: sessionId,
       stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+      intake_submission_id: invoice.intake_submission_id || null,
+      payment_kind: invoice.payment_kind || 'full',
       amount_cents: amountTotal,
+      remaining_balance_cents: Number(invoice.remaining_balance_cents || 0),
       currency
     }
   });
