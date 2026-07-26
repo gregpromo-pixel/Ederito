@@ -48,7 +48,15 @@ export default function AdminIntakesClient({initialSubmissions,initialConversati
   const t=copy[lang];
 
   useEffect(()=>{ const saved=localStorage.getItem('ederito-portal-language') as Lang|null; if(saved&&['en','fr','es'].includes(saved)) setLang(saved); },[]);
-  function chooseLang(next:Lang){ setLang(next); localStorage.setItem('ederito-portal-language',next); }
+  function chooseLang(next:Lang){
+    setLang(next);
+    localStorage.setItem('ederito-portal-language',next);
+    localStorage.setItem('ederito-language',next);
+    document.cookie=`ederito-language=${next}; Max-Age=31536000; Path=/; Domain=.ederito.com; SameSite=Lax; Secure`;
+    document.documentElement.lang=next;
+    document.documentElement.dataset.lang=next;
+    window.dispatchEvent(new CustomEvent('ederito:language',{detail:next}));
+  }
 
   const services=useMemo(()=>Array.from(new Set(submissions.map(s=>s.service_packages?.name||'Custom request'))),[submissions]);
   const filtered=useMemo(()=>submissions.filter(s=>{
@@ -97,23 +105,23 @@ export default function AdminIntakesClient({initialSubmissions,initialConversati
   async function openAttachment(item:Attachment){ const supabase=createClient(); const {data}=await supabase.storage.from('client-communications').createSignedUrl(item.storage_path,300); if(data?.signedUrl) window.open(data.signedUrl,'_blank','noopener,noreferrer'); }
 
   return <main className="admin-intakes premium-ops">
-    <header className="admin-bar premium-admin-bar">
-      <Link href="/dashboard" className="admin-brand"><img src="https://ederito.com/assets/eder-logo.png" alt="Ederito"/><span>EDERITO</span><em>{t.operations}</em></Link>
-      <nav><Link href="/dashboard">← {t.back}</Link><span>{staffName}</span><div className="language-mini">{(['en','fr','es'] as Lang[]).map(x=><button key={x} onClick={()=>chooseLang(x)} className={lang===x?'active':''}>{x.toUpperCase()}</button>)}</div></nav>
-    </header>
-
-    <section className="admin-hero premium-admin-hero"><p>{t.workspace}</p><h1>{t.title}.</h1><span>{t.subtitle}</span>
-      <div className="admin-metrics"><article><span>{t.new}</span><strong>{submissions.filter(x=>x.status==='submitted').length}</strong></article><article><span>{t.review}</span><strong>{submissions.filter(x=>x.status==='under_review').length}</strong></article><article><span>{t.corrections}</span><strong>{submissions.filter(x=>x.status==='correction_required').length}</strong></article><article><span>{t.total}</span><strong>{submissions.length}</strong></article></div>
+    <section className="admin-hero premium-admin-hero">
+      <div className="admin-hero-toolbar">
+        <div className="admin-context"><span className="admin-context-badge">{t.operations}</span><span className="admin-context-name">{staffName}</span></div>
+        <div className="admin-hero-actions"><Link href="/dashboard" className="admin-back-link">← {t.back}</Link><div className="language-mini admin-language" aria-label="Language">{(['en','fr','es'] as Lang[]).map(x=><button type="button" key={x} onClick={()=>chooseLang(x)} className={lang===x?'active':''}>{x.toUpperCase()}</button>)}</div></div>
+      </div>
+      <div className="admin-hero-copy"><p>{t.workspace}</p><h1>{t.title}.</h1><span>{t.subtitle}</span></div>
+      <div className="admin-metrics"><article><small>01</small><span>{t.new}</span><strong>{submissions.filter(x=>x.status==='submitted').length}</strong></article><article><small>02</small><span>{t.review}</span><strong>{submissions.filter(x=>x.status==='under_review').length}</strong></article><article><small>03</small><span>{t.corrections}</span><strong>{submissions.filter(x=>x.status==='correction_required').length}</strong></article><article><small>04</small><span>{t.total}</span><strong>{submissions.length}</strong></article></div>
     </section>
 
     <section className="admin-workspace premium-workspace">
-      <aside className="intake-queue"><div className="queue-tools"><input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t.search}/><select value={serviceFilter} onChange={e=>setServiceFilter(e.target.value)}><option value="all">{t.all}</option>{services.map(x=><option key={x}>{x}</option>)}</select></div>
+      <aside className="intake-queue"><div className="queue-tools"><div className="queue-summary"><span>{t.operations}</span><strong>{filtered.length.toString().padStart(2,'0')}</strong></div><input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t.search}/><select value={serviceFilter} onChange={e=>setServiceFilter(e.target.value)}><option value="all">{t.all}</option>{services.map(x=><option key={x}>{x}</option>)}</select></div>
         <div className="service-pills"><button className={serviceFilter==='all'?'active':''} onClick={()=>setServiceFilter('all')}>{t.all}</button>{services.map(x=><button key={x} className={serviceFilter===x?'active':''} onClick={()=>setServiceFilter(x)}>{x}</button>)}</div>
-        <div className="queue-list">{filtered.map(item=><button key={item.id} className={item.id===selected?.id?'active':''} onClick={()=>{setSelectedId(item.id);setView('intake');setNotice('');}}><small>{item.request_number||item.id.slice(0,8).toUpperCase()}</small><strong>{item.client?.full_name||item.signed_name||'Unnamed client'}</strong><span>{item.service_packages?.name||'Custom request'}</span><em>{titleCase(item.status)}</em></button>)}{!filtered.length&&<p className="queue-empty">No requests match this view.</p>}</div>
+        <div className="queue-list">{filtered.map(item=><button key={item.id} data-status={item.status} className={item.id===selected?.id?'active':''} onClick={()=>{setSelectedId(item.id);setView('intake');setNotice('');}}><div className="queue-card-top"><small>{item.request_number||item.id.slice(0,8).toUpperCase()}</small><i className="queue-status-dot" aria-hidden="true"/></div><strong>{item.client?.full_name||item.signed_name||'Unnamed client'}</strong><span>{item.service_packages?.name||'Custom request'}</span><em>{titleCase(item.status)}</em></button>)}{!filtered.length&&<p className="queue-empty">{t.no}</p>}</div>
       </aside>
 
       <section className="review-panel">{!selected?<div className="review-empty">{t.no}</div>:<>
-        <div className="review-head"><div><p>{selected.request_number||'INTAKE REQUEST'}</p><h2>{selected.client?.full_name||selected.signed_name||'Unnamed client'}</h2><span>{selected.service_packages?.name||'Custom request'} · {selected.client?.company_name||selected.client?.phone||'Ederito client'}</span></div><div className="review-total"><small>{t.estimated}</small><strong>{money(selected.estimated_total_cents)}</strong></div></div>
+        <div className="review-head"><div><div className="review-request-line"><p>{selected.request_number||'INTAKE REQUEST'}</p><span className={`review-status status-${selected.status}`}>{titleCase(selected.status)}</span></div><h2>{selected.client?.full_name||selected.signed_name||'Unnamed client'}</h2><span>{selected.service_packages?.name||'Custom request'} · {selected.client?.company_name||selected.client?.phone||'Ederito client'}</span></div><div className="review-total"><small>{t.estimated}</small><strong>{money(selected.estimated_total_cents)}</strong></div></div>
         <div className="review-tabs"><button className={view==='intake'?'active':''} onClick={()=>setView('intake')}>{t.intake}</button><button className={view==='messages'?'active':''} onClick={()=>setView('messages')}>{t.messages}</button><button className={view==='notes'?'active':''} onClick={()=>setView('notes')}>{t.notes}</button></div>
         <div className="review-grid"><article><span>{t.serviceFee}</span><strong>{money(selected.calculated_service_fee_cents)}</strong></article><article><span>{t.thirdParty}</span><strong>{money(selected.calculated_third_party_fees_cents)}</strong></article><article><span>{t.status}</span><strong>{titleCase(selected.status)}</strong></article><article><span>{t.quote}</span><strong>{selected.quote_required?t.yes:t.noWord}</strong></article></div>
 
