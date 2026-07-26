@@ -9,7 +9,17 @@ export default function AppleNavigationEnhancer() {
     const header = document.querySelector('.portal-command-header');
     const workspace = document.querySelector('.portal-workspace-nav');
     const nav = document.querySelector('.portal-command-nav');
-    if (!header || !workspace || !nav || header.querySelector('.apple-workspace-toggle')) return;
+    const existingToggle = header?.querySelector('.apple-workspace-toggle');
+
+    if (!header || !nav) return;
+
+    if (!workspace) {
+      existingToggle?.remove();
+      header.classList.remove('apple-menu-open');
+      return;
+    }
+
+    if (existingToggle) return;
 
     workspace.classList.add('apple-workspace-panel');
     const toggle = document.createElement('button');
