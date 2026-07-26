@@ -18,6 +18,7 @@ import './premium-polish.css';
 import './portal-theme.css';
 import './portal-theme-coverage.css';
 import './stripe-payments.css';
+import './client-command-center.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import PhoneCountryCodeEnhancer from './PhoneCountryCodeEnhancer';
@@ -28,7 +29,6 @@ import AIPlannerShortcut from './AIPlannerShortcut';
 import UnifiedExperience from './UnifiedExperience';
 import AppleNavigationEnhancer from './AppleNavigationEnhancer';
 import CinematicAIExperience from './CinematicAIExperience';
-import SmartClientWorkspace from './SmartClientWorkspace';
 import PremiumPolishExperience from './PremiumPolishExperience';
 
 export const metadata: Metadata = {
@@ -70,7 +70,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <UnifiedExperience />
         <AppleNavigationEnhancer />
         <CinematicAIExperience />
-        <SmartClientWorkspace />
         <PremiumPolishExperience />
         <IntakeEnhancer />
         <StartProjectTranslations />
