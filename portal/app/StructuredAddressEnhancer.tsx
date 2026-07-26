@@ -89,7 +89,7 @@ function createInput(label: string, placeholder: string, autocomplete: string, r
   const input = make('input');
   input.type = 'text';
   input.placeholder = placeholder;
-  input.autocomplete = autocomplete;
+  input.setAttribute('autocomplete', autocomplete);
   input.required = required;
   wrapper.append(caption, input);
   return { wrapper, input };
