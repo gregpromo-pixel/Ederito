@@ -23,6 +23,7 @@ import './portal-toasts.css';
 import './operations-refinement.css';
 import './project-payment-guidance.css';
 import './route-progress.css';
+import './structured-addresses.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import PhoneCountryCodeEnhancer from './PhoneCountryCodeEnhancer';
@@ -38,6 +39,7 @@ import PortalNoticeEnhancer from './PortalNoticeEnhancer';
 import ProjectPaymentGuidance from './ProjectPaymentGuidance';
 import RouteProgress from './RouteProgress';
 import DirectCheckoutEnhancer from './DirectCheckoutEnhancer';
+import StructuredAddressEnhancer from './StructuredAddressEnhancer';
 
 export const metadata: Metadata = {
   title: 'Ederito Client Portal',
@@ -80,6 +82,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <RouteProgress />
         <ProjectPaymentGuidance />
         <DirectCheckoutEnhancer />
+        <StructuredAddressEnhancer />
         <CinematicAIExperience />
         <PremiumPolishExperience />
         <PortalNoticeEnhancer />
