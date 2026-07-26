@@ -5,12 +5,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 type Lang = 'en' | 'fr' | 'es';
-type DashboardSection = 'projects' | 'contracts' | 'invoices' | 'messages' | 'support';
+type DashboardSection = 'projects' | 'proposals' | 'contracts' | 'invoices' | 'messages' | 'documents' | 'support';
 
 const copy = {
-  en: { explore:'Explore Ederito', dashboard:'Dashboard', ai:'AI Studio', project:'New project', login:'Sign in', register:'Create account', signout:'Sign out', portal:'Client portal', projects:'Projects', contracts:'Contracts', invoices:'Invoices', messages:'Messages', support:'Support', operations:'Operations', company:'Company', services:'Services', legal:'Legal', privacy:'Privacy', terms:'Terms', contact:'Contact', language:'Language', rights:'All rights reserved.' },
-  fr: { explore:'Découvrir Ederito', dashboard:'Tableau de bord', ai:'Studio IA', project:'Nouveau projet', login:'Connexion', register:'Créer un compte', signout:'Déconnexion', portal:'Portail client', projects:'Projets', contracts:'Contrats', invoices:'Factures', messages:'Messages', support:'Assistance', operations:'Opérations', company:'Entreprise', services:'Services', legal:'Juridique', privacy:'Confidentialité', terms:'Conditions', contact:'Contact', language:'Langue', rights:'Tous droits réservés.' },
-  es: { explore:'Explorar Ederito', dashboard:'Panel', ai:'Estudio IA', project:'Nuevo proyecto', login:'Iniciar sesión', register:'Crear cuenta', signout:'Cerrar sesión', portal:'Portal del cliente', projects:'Proyectos', contracts:'Contratos', invoices:'Facturas', messages:'Mensajes', support:'Soporte', operations:'Operaciones', company:'Empresa', services:'Servicios', legal:'Legal', privacy:'Privacidad', terms:'Términos', contact:'Contacto', language:'Idioma', rights:'Todos los derechos reservados.' }
+  en: { explore:'Explore Ederito', dashboard:'Dashboard', ai:'AI Studio', project:'New project', login:'Sign in', register:'Create account', signout:'Sign out', portal:'Client portal', projects:'Projects', proposals:'Proposals', contracts:'Contracts', invoices:'Invoices', messages:'Messages', documents:'Documents', support:'Support', operations:'Operations', company:'Company', services:'Services', legal:'Legal', privacy:'Privacy', terms:'Terms', contact:'Contact', language:'Language', rights:'All rights reserved.' },
+  fr: { explore:'Découvrir Ederito', dashboard:'Tableau de bord', ai:'Studio IA', project:'Nouveau projet', login:'Connexion', register:'Créer un compte', signout:'Déconnexion', portal:'Portail client', projects:'Projets', proposals:'Propositions', contracts:'Contrats', invoices:'Factures', messages:'Messages', documents:'Documents', support:'Assistance', operations:'Opérations', company:'Entreprise', services:'Services', legal:'Juridique', privacy:'Confidentialité', terms:'Conditions', contact:'Contact', language:'Langue', rights:'Tous droits réservés.' },
+  es: { explore:'Explorar Ederito', dashboard:'Panel', ai:'Estudio IA', project:'Nuevo proyecto', login:'Iniciar sesión', register:'Crear cuenta', signout:'Cerrar sesión', portal:'Portal del cliente', projects:'Proyectos', proposals:'Propuestas', contracts:'Contratos', invoices:'Facturas', messages:'Mensajes', documents:'Documentos', support:'Soporte', operations:'Operaciones', company:'Empresa', services:'Servicios', legal:'Legal', privacy:'Privacidad', terms:'Términos', contact:'Contacto', language:'Idioma', rights:'Todos los derechos reservados.' }
 };
 
 function readCookie(): Lang | null {
@@ -76,7 +76,7 @@ export default function UnifiedExperience() {
     document.querySelector('.workspace-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  const dashboardSections: DashboardSection[] = ['projects','contracts','invoices','messages','support'];
+  const dashboardSections: DashboardSection[] = ['projects','proposals','contracts','invoices','messages','documents','support'];
 
   return <>
     <header className={`portal-command-header ${isDashboard ? 'has-workspace-row' : ''}`}>
