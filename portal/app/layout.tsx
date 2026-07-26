@@ -20,6 +20,9 @@ import './portal-theme-coverage.css';
 import './stripe-payments.css';
 import './client-command-center.css';
 import './portal-toasts.css';
+import './operations-refinement.css';
+import './project-payment-guidance.css';
+import './route-progress.css';
 import type { Metadata } from 'next';
 import IntakeEnhancer from './IntakeEnhancer';
 import PhoneCountryCodeEnhancer from './PhoneCountryCodeEnhancer';
@@ -32,6 +35,8 @@ import AppleNavigationEnhancer from './AppleNavigationEnhancer';
 import CinematicAIExperience from './CinematicAIExperience';
 import PremiumPolishExperience from './PremiumPolishExperience';
 import PortalNoticeEnhancer from './PortalNoticeEnhancer';
+import ProjectPaymentGuidance from './ProjectPaymentGuidance';
+import RouteProgress from './RouteProgress';
 
 export const metadata: Metadata = {
   title: 'Ederito Client Portal',
@@ -71,6 +76,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <UnifiedExperience />
         <AppleNavigationEnhancer />
+        <RouteProgress />
+        <ProjectPaymentGuidance />
         <CinematicAIExperience />
         <PremiumPolishExperience />
         <PortalNoticeEnhancer />
