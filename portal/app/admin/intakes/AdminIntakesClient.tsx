@@ -22,9 +22,9 @@ type Props = { initialSubmissions: Submission[]; initialConversations: Conversat
 
 const statuses = ['submitted', 'under_review', 'correction_required', 'approved', 'filed', 'completed', 'declined'];
 const copy = {
-  en: { back:'Back to dashboard', workspace:'Internal workspace', title:'Client operations', subtitle:'Review every request, preserve every answer, and communicate securely with each client.', new:'New', review:'Under review', corrections:'Corrections', total:'Total', search:'Search clients or requests', all:'All services', intake:'Application', messages:'Messages & files', notes:'Review & status', submitted:'Submitted information', print:'Print summary', no:'Select a client request.', send:'Send message', attach:'Attach documents or photos', sending:'Sending…', saved:'Review saved.', sent:'Message sent.', status:'Status', private:'Private review summary', correction:'Client correction request', save:'Save review', clientPortal:'Client portal', operations:'Operations', noMessages:'No messages yet.', serviceFee:'Service fee', thirdParty:'Third-party fees', estimated:'Estimated total', quote:'Quote required', yes:'Yes', noWord:'No' },
-  fr: { back:'Retour au tableau de bord', workspace:'Espace interne', title:'Opérations clients', subtitle:'Examinez chaque demande, conservez chaque réponse et communiquez de façon sécurisée avec chaque client.', new:'Nouvelles', review:'En examen', corrections:'Corrections', total:'Total', search:'Rechercher un client ou une demande', all:'Tous les services', intake:'Dossier', messages:'Messages et fichiers', notes:'Examen et statut', submitted:'Informations fournies', print:'Imprimer le résumé', no:'Sélectionnez une demande client.', send:'Envoyer le message', attach:'Joindre des documents ou photos', sending:'Envoi…', saved:'Examen enregistré.', sent:'Message envoyé.', status:'Statut', private:'Résumé privé de l’examen', correction:'Demande de correction au client', save:'Enregistrer', clientPortal:'Portail client', operations:'Opérations', noMessages:'Aucun message.', serviceFee:'Frais de service', thirdParty:'Frais tiers', estimated:'Total estimé', quote:'Devis requis', yes:'Oui', noWord:'Non' },
-  es: { back:'Volver al panel', workspace:'Espacio interno', title:'Operaciones de clientes', subtitle:'Revisa cada solicitud, conserva cada respuesta y comunícate de forma segura con cada cliente.', new:'Nuevas', review:'En revisión', corrections:'Correcciones', total:'Total', search:'Buscar clientes o solicitudes', all:'Todos los servicios', intake:'Solicitud', messages:'Mensajes y archivos', notes:'Revisión y estado', submitted:'Información enviada', print:'Imprimir resumen', no:'Selecciona una solicitud.', send:'Enviar mensaje', attach:'Adjuntar documentos o fotos', sending:'Enviando…', saved:'Revisión guardada.', sent:'Mensaje enviado.', status:'Estado', private:'Resumen privado de revisión', correction:'Solicitud de corrección al cliente', save:'Guardar revisión', clientPortal:'Portal del cliente', operations:'Operaciones', noMessages:'Aún no hay mensajes.', serviceFee:'Tarifa de servicio', thirdParty:'Costos de terceros', estimated:'Total estimado', quote:'Cotización requerida', yes:'Sí', noWord:'No' }
+  en: { back:'Back to dashboard', workspace:'Internal workspace', title:'Client operations', subtitle:'Review every request, preserve every answer, and communicate securely with each client.', new:'New', review:'Under review', corrections:'Corrections', total:'Total', search:'Search clients or requests', all:'All services', intake:'Application', messages:'Messages & files', notes:'Review & status', submitted:'Submitted information', print:'Print summary', no:'Select a client request.', send:'Send message', attach:'Attach documents or photos', sending:'Sending…', saved:'Review saved.', sent:'Message sent.', status:'Status', private:'Private review summary', correction:'Client correction request', save:'Save review', clientPortal:'Client portal', operations:'Operations', noMessages:'No messages yet.', serviceFee:'Service fee', thirdParty:'Third-party fees', estimated:'Estimated total', quote:'Quote required', yes:'Yes', noWord:'No', close:'Close notification' },
+  fr: { back:'Retour au tableau de bord', workspace:'Espace interne', title:'Opérations clients', subtitle:'Examinez chaque demande, conservez chaque réponse et communiquez de façon sécurisée avec chaque client.', new:'Nouvelles', review:'En examen', corrections:'Corrections', total:'Total', search:'Rechercher un client ou une demande', all:'Tous les services', intake:'Dossier', messages:'Messages et fichiers', notes:'Examen et statut', submitted:'Informations fournies', print:'Imprimer le résumé', no:'Sélectionnez une demande client.', send:'Envoyer le message', attach:'Joindre des documents ou photos', sending:'Envoi…', saved:'Examen enregistré.', sent:'Message envoyé.', status:'Statut', private:'Résumé privé de l’examen', correction:'Demande de correction au client', save:'Enregistrer', clientPortal:'Portail client', operations:'Opérations', noMessages:'Aucun message.', serviceFee:'Frais de service', thirdParty:'Frais tiers', estimated:'Total estimé', quote:'Devis requis', yes:'Oui', noWord:'Non', close:'Fermer la notification' },
+  es: { back:'Volver al panel', workspace:'Espacio interno', title:'Operaciones de clientes', subtitle:'Revisa cada solicitud, conserva cada respuesta y comunícate de forma segura con cada cliente.', new:'Nuevas', review:'En revisión', corrections:'Correcciones', total:'Total', search:'Buscar clientes o solicitudes', all:'Todos los servicios', intake:'Solicitud', messages:'Mensajes y archivos', notes:'Revisión y estado', submitted:'Información enviada', print:'Imprimir resumen', no:'Selecciona una solicitud.', send:'Enviar mensaje', attach:'Adjuntar documentos o fotos', sending:'Enviando…', saved:'Revisión guardada.', sent:'Mensaje enviado.', status:'Estado', private:'Resumen privado de revisión', correction:'Solicitud de corrección al cliente', save:'Guardar revisión', clientPortal:'Portal del cliente', operations:'Operaciones', noMessages:'Aún no hay mensajes.', serviceFee:'Tarifa de servicio', thirdParty:'Costos de terceros', estimated:'Total estimado', quote:'Cotización requerida', yes:'Sí', noWord:'No', close:'Cerrar notificación' }
 };
 
 const money = (cents: number) => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100);
@@ -44,10 +44,13 @@ export default function AdminIntakesClient({initialSubmissions,initialConversati
   const [view,setView]=useState<'intake'|'messages'|'notes'>('intake');
   const [busy,setBusy]=useState(false);
   const [notice,setNotice]=useState('');
+  const [noticeType,setNoticeType]=useState<'success'|'error'>('success');
   const [files,setFiles]=useState<File[]>([]);
   const t=copy[lang];
 
   useEffect(()=>{ const saved=localStorage.getItem('ederito-portal-language') as Lang|null; if(saved&&['en','fr','es'].includes(saved)) setLang(saved); },[]);
+  useEffect(()=>{ if(!notice)return; const timer=window.setTimeout(()=>setNotice(''),4600); return()=>window.clearTimeout(timer); },[notice]);
+  function showNotice(text:string,type:'success'|'error'){setNoticeType(type);setNotice(text);}
   function chooseLang(next:Lang){
     setLang(next);
     localStorage.setItem('ederito-portal-language',next);
@@ -76,7 +79,7 @@ export default function AdminIntakesClient({initialSubmissions,initialConversati
     const now=new Date().toISOString(); const supabase=createClient();
     const patch={status,review_summary,correction_message,reviewed_at:['under_review','correction_required','approved','declined'].includes(status)?now:selected.reviewed_at,completed_at:status==='completed'?now:null,updated_at:now};
     const {error}=await supabase.from('intake_submissions').update(patch).eq('id',selected.id);
-    if(error) setNotice(error.message); else { setSubmissions(v=>v.map(s=>s.id===selected.id?{...s,...patch}:s)); setNotice(t.saved); }
+    if(error) showNotice(error.message,'error'); else { setSubmissions(v=>v.map(s=>s.id===selected.id?{...s,...patch}:s)); showNotice(t.saved,'success'); }
     setBusy(false);
   }
 
@@ -87,19 +90,19 @@ export default function AdminIntakesClient({initialSubmissions,initialConversati
     const supabase=createClient(); let active=conversation;
     if(!active){
       const {data,error}=await supabase.from('client_conversations').insert({client_id:selected.client_id,intake_submission_id:selected.id,category:categoryFromSlug(selected.service_packages?.slug),title:selected.service_packages?.name||'Ederito request',status:'waiting_on_client',created_by:staffId}).select('id,client_id,intake_submission_id,category,title,status,created_at,updated_at').single();
-      if(error){setNotice(error.message);setBusy(false);return;} active=data as Conversation; setConversations(v=>[active!,...v]);
+      if(error){showNotice(error.message,'error');setBusy(false);return;} active=data as Conversation; setConversations(v=>[active!,...v]);
     }
     const {data:msg,error:msgError}=await supabase.from('client_messages').insert({conversation_id:active.id,sender_id:staffId,sender_role:'staff',body:body||null}).select('id,conversation_id,sender_id,sender_role,body,created_at,read_at').single();
-    if(msgError||!msg){setNotice(msgError?.message||'Unable to send message.');setBusy(false);return;}
+    if(msgError||!msg){showNotice(msgError?.message||'Unable to send message.','error');setBusy(false);return;}
     const newAttachments:Attachment[]=[];
     for(const file of files){
       const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-'); const path=`${selected.client_id}/${active.id}/${msg.id}-${Date.now()}-${safe}`;
       const {error:uploadError}=await supabase.storage.from('client-communications').upload(path,file,{upsert:false,contentType:file.type});
-      if(uploadError){setNotice(uploadError.message);continue;}
+      if(uploadError){showNotice(uploadError.message,'error');continue;}
       const {data:row,error:rowError}=await supabase.from('client_message_attachments').insert({message_id:msg.id,client_id:selected.client_id,storage_path:path,file_name:file.name,mime_type:file.type||null,size_bytes:file.size}).select('id,message_id,client_id,storage_path,file_name,mime_type,size_bytes,created_at').single();
       if(!rowError&&row)newAttachments.push(row as Attachment);
     }
-    setMessages(v=>[...v,msg as Message]); setAttachments(v=>[...v,...newAttachments]); setFiles([]); formElement.reset(); setNotice(t.sent); setBusy(false);
+    setMessages(v=>[...v,msg as Message]); setAttachments(v=>[...v,...newAttachments]); setFiles([]); formElement.reset(); showNotice(t.sent,'success'); setBusy(false);
   }
 
   async function openAttachment(item:Attachment){ const supabase=createClient(); const {data}=await supabase.storage.from('client-communications').createSignedUrl(item.storage_path,300); if(data?.signedUrl) window.open(data.signedUrl,'_blank','noopener,noreferrer'); }
@@ -130,8 +133,8 @@ export default function AdminIntakesClient({initialSubmissions,initialConversati
         {view==='messages'&&<section className="message-center"><div className="message-thread">{thread.map(msg=><article key={msg.id} className={msg.sender_role==='staff'?'staff-message':'client-message'}><header><strong>{msg.sender_role==='staff'?'Ederito':selected.client?.full_name||'Client'}</strong><time>{new Date(msg.created_at).toLocaleString()}</time></header>{msg.body&&<p>{msg.body}</p>}<div className="message-files">{attachments.filter(a=>a.message_id===msg.id).map(a=><button key={a.id} onClick={()=>openAttachment(a)}>{a.mime_type?.startsWith('image/')?'🖼':'📄'} {a.file_name}</button>)}</div></article>)}{!thread.length&&<div className="thread-empty">{t.noMessages}</div>}</div><form className="message-composer" onSubmit={sendMessage}><textarea name="body" placeholder={t.send}/><label className="file-picker"><input type="file" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onChange={(e:ChangeEvent<HTMLInputElement>)=>setFiles(Array.from(e.target.files||[]))}/><span>{t.attach}</span></label>{files.length>0&&<div className="selected-files">{files.map(f=><span key={`${f.name}-${f.size}`}>{f.name}</span>)}</div>}<button disabled={busy}>{busy?t.sending:t.send}</button></form></section>}
 
         {view==='notes'&&<form className="review-form" onSubmit={saveReview}><label><span>{t.status}</span><select name="status" defaultValue={selected.status} key={`${selected.id}-status`}>{statuses.map(s=><option key={s} value={s}>{titleCase(s)}</option>)}</select></label><label><span>{t.private}</span><textarea name="review_summary" defaultValue={selected.review_summary||''} key={`${selected.id}-summary`}/></label><label><span>{t.correction}</span><textarea name="correction_message" defaultValue={selected.correction_message||''} key={`${selected.id}-correction`}/></label><button disabled={busy}>{busy?t.sending:t.save}</button></form>}
-        {notice&&<div className={notice===t.saved||notice===t.sent?'admin-success':'admin-error'}>{notice}</div>}
       </>}</section>
     </section>
+    {notice&&<div className={`portal-toast portal-toast-${noticeType}`} role={noticeType==='error'?'alert':'status'} aria-live="polite"><span className="portal-toast-icon" aria-hidden="true">{noticeType==='success'?'✓':'!'}</span><p>{notice}</p><button type="button" onClick={()=>setNotice('')} aria-label={t.close}>×</button><i className="portal-toast-progress" aria-hidden="true"/></div>}
   </main>;
 }
